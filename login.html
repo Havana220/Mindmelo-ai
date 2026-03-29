@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mindmelo</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(135deg, #e3f2fd, #f3e5f5, #fce4ec);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.6;
+      animation: float 10s infinite ease-in-out;
+    }
+
+    .blob1 {
+      width: 200px;
+      height: 200px;
+      background: #b3e5fc;
+      top: 10%;
+      left: 10%;
+    }
+
+    .blob2 {
+      width: 250px;
+      height: 250px;
+      background: #e1bee7;
+      bottom: 10%;
+      right: 10%;
+    }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(30px); }
+    }
+
+    .box {
+      width: 320px;
+      padding: 25px;
+      background: #ffffffcc;
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: bold;
+      background: linear-gradient(90deg, #42a5f5, #ab47bc, #ec407a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    .tagline {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 90%;
+      margin: 10px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #f3e5f5;
+      outline: none;
+    }
+
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #b3e5fc;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+    }
+
+    .toggle {
+      margin-top: 12px;
+      font-size: 13px;
+      cursor: pointer;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<div class="box">
+  <div class="logo">Mindmelo 💙</div>
+  <div class="tagline">Your AI mental wellness companion</div>
+
+  <h3 id="title">Login</h3>
+
+  <input id="username" placeholder="Username">
+  <input id="age" placeholder="Age">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="handleAuth()">Login</button>
+
+  <div class="toggle" onclick="toggleMode()">
+    Don't have an account? Sign up
+  </div>
+</div>
+
+<script>
+let isLogin = true;
+
+function toggleMode(){
+  isLogin = !isLogin;
+  title.innerText = isLogin ? "Login" : "Sign Up";
+  document.querySelector("button").innerText = isLogin ? "Login" : "Sign Up";
+  document.querySelector(".toggle").innerText =
+    isLogin ? "Don't have an account? Sign up" : "Already have an account? Login";
+}
+
+function handleAuth(){
+  let user = username.value;
+  let age = document.getElementById("age").value;
+  let pass = password.value;
+
+  if(!user || !pass || (!isLogin && !age)){
+    alert("Fill all fields");
+    return;
+  }
+
+  if(isLogin){
+    if(user === localStorage.getItem("user") && pass === localStorage.getItem("pass")){
+      window.location.href = "index.html";
+    } else {
+      alert("Invalid credentials");
+    }
+  } else {
+    localStorage.setItem("user", user);
+    localStorage.setItem("age", age);
+    localStorage.setItem("pass", pass);
+
+    alert("Signup successful! Now login.");
+    toggleMode();
+  }
+}
+</script>
+
+</body>
+</html>

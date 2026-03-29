@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mindmelo AI</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(135deg,#e3f2fd,#f3e5f5,#fce4ec);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .sidebar {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .sidebar button {
+      position: relative;
+      border: none;
+      background: #f8bbd0;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .sidebar button::after {
+      content: attr(data-label);
+      position: absolute;
+      left: 55px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #333;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      opacity: 0;
+      transition: 0.2s;
+      white-space: nowrap;
+    }
+
+    .sidebar button:hover::after {
+      opacity: 1;
+    }
+
+    .container {
+      width: 360px;
+      height: 600px;
+      background: #ffffffcc;
+      border-radius: 25px;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .header {
+      text-align: center;
+      padding: 12px;
+      font-weight: bold;
+      background: linear-gradient(90deg,#b3e5fc,#e1bee7,#f8bbd0);
+      border-radius: 25px 25px 0 0;
+      position: relative;
+    }
+
+    .profile-icon {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      cursor: pointer;
+    }
+
+    #mood {
+      text-align: center;
+      padding: 5px;
+    }
+
+    #chatbox {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .msg {
+      margin: 6px;
+      padding: 10px;
+      border-radius: 12px;
+      max-width: 75%;
+      font-size: 13px;
+    }
+
+    .user { background:#d1c4e9; align-self:flex-end; }
+    .bot { background:#e1f5fe; align-self:flex-start; }
+
+    .input-area { display: flex; flex-direction: column; }
+
+    .emoji-bar { text-align: center; padding: 5px; }
+
+    .emoji-bar span {
+      cursor: pointer;
+      margin: 5px;
+      font-size: 18px;
+    }
+
+    .bottom { display: flex; }
+
+    input {
+      flex:1;
+      padding:10px;
+      border:none;
+      outline:none;
+      background:#f3e5f5;
+    }
+
+    button.send {
+      border:none;
+      padding:10px;
+      background:#b3e5fc;
+      cursor:pointer;
+    }
+
+    .popup {
+      position:absolute;
+      right:20px;
+      top:60px;
+      width:280px;
+      height:280px;
+      background:#fff;
+      border-radius:15px;
+      display:none;
+      padding:10px;
+      overflow:auto;
+      transition: all 0.2s ease;
+    }
+  </style>
+</head>
+
+<body>
+
+<script>
+if(!localStorage.getItem("user")){
+  window.location.href="login.html";
+}
+</script>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <button data-label="History" onclick="togglePopup('historyPopup')">📜</button>
+  <button data-label="Analysis" onclick="togglePopup('analysisPopup')">🧠</button>
+  <button data-label="Mood Graph" onclick="togglePopup('graphPopup')">📊</button>
+  <button data-label="Logout" onclick="logout()">🚪</button>
+</div>
+
+<!-- Main -->
+<div class="container">
+  <div class="header">
+    Mindmelo 💙
+    <span class="profile-icon" onclick="toggleProfile()">👤</span>
+  </div>
+
+  <div id="mood">Mood: 🙂</div>
+
+  <div id="chatbox"></div>
+
+  <div class="input-area">
+    <div class="emoji-bar">
+      <span onclick="quickMood('happy')">😊</span>
+      <span onclick="quickMood('sad')">💙</span>
+      <span onclick="quickMood('stress')">😓</span>
+    </div>
+
+    <div class="bottom">
+      <input id="userInput" placeholder="Type your feelings..." />
+      <button class="send" onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Popups -->
+<div id="historyPopup" class="popup">
+  <h3>📜 History</h3>
+  <div id="history"></div>
+</div>
+
+<div id="analysisPopup" class="popup">
+  <h3>🧠 Analysis</h3>
+  <div id="analysis"></div>
+</div>
+
+<div id="graphPopup" class="popup">
+  <h3>📊 Mood Graph</h3>
+  <canvas id="moodChart"></canvas>
+</div>
+
+<div id="profilePopup" class="popup">
+  <h3>👤 Profile</h3>
+  <p>Name: <span id="pname"></span></p>
+  <p>Age: <span id="page"></span></p>
+</div>
+
+<script>
+let moodHistory=[];
+let moodScores=[];
+let chart;
+let profileOpen=false;
+let currentPopup=null;
+
+window.onload = function(){
+  document.getElementById("userInput").addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      sendMessage();
+    }
+  });
+};
+
+async function sendMessage(){
+  let input=document.getElementById("userInput").value.trim();
+  if(!input) return;
+
+  let chatbox=document.getElementById("chatbox");
+
+  chatbox.innerHTML+=`<div class="msg user">${input}</div>`;
+  document.getElementById("userInput").value="";
+
+  detectMood(input);
+
+  chatbox.innerHTML+=`<div class="msg bot" id="typing">Typing...</div>`;
+
+  try{
+    let res=await fetch("http://localhost:5000/chat",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json"},
+      body:JSON.stringify({message:input})
+    });
+
+    let data=await res.json();
+
+    document.getElementById("typing")?.remove();
+
+    chatbox.innerHTML+=`<div class="msg bot">${data.reply}</div>`;
+    chatbox.scrollTop=chatbox.scrollHeight;
+
+  }catch{
+    document.getElementById("typing")?.remove();
+    chatbox.innerHTML+=`<div class="msg bot">Error connecting 💔</div>`;
+  }
+}
+
+function detectMood(text){
+  let mood="🙂";
+  let score=3;
+
+  text=text.toLowerCase();
+
+  if(text.includes("happy")||text.includes("good")){
+    mood="😊"; score=5;
+  }
+  else if(text.includes("sad")||text.includes("depressed")){
+    mood="💙"; score=2;
+  }
+  else if(text.includes("stress")||text.includes("anxious")){
+    mood="😓"; score=1;
+  }
+
+  document.getElementById("mood").innerText="Mood: "+mood;
+
+  moodHistory.push(mood);
+  moodScores.push(score);
+
+  document.getElementById("history").innerText=moodHistory.join(" → ");
+
+  analyzeMentalState();
+  updateChart();
+}
+
+function analyzeMentalState(){
+  let avg=moodScores.reduce((a,b)=>a+b,0)/moodScores.length;
+
+  let msg="";
+
+  if(avg>=4) msg="😊 You seem positive overall!";
+  else if(avg>=2) msg="🙂 Mixed emotions detected.";
+  else msg="💙 You might be stressed. Take care.";
+
+  document.getElementById("analysis").innerText=msg;
+}
+
+function updateChart(){
+  const ctx=document.getElementById("moodChart");
+
+  if(chart) chart.destroy();
+
+  chart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:moodScores.map((_,i)=>i+1),
+      datasets:[{ data:moodScores }]
+    }
+  });
+}
+
+function togglePopup(id){
+  let popup=document.getElementById(id);
+
+  if(currentPopup===id){
+    popup.style.display="none";
+    currentPopup=null;
+    return;
+  }
+
+  document.querySelectorAll(".popup").forEach(p=>p.style.display="none");
+
+  popup.style.display="block";
+  currentPopup=id;
+}
+
+function toggleProfile(){
+  let p=document.getElementById("profilePopup");
+
+  if(profileOpen){
+    p.style.display="none";
+    profileOpen=false;
+  } else {
+    p.style.display="block";
+    profileOpen=true;
+
+    document.getElementById("pname").innerText=localStorage.getItem("user");
+    document.getElementById("page").innerText=localStorage.getItem("age");
+  }
+}
+
+function quickMood(type){
+  document.getElementById("userInput").value=type;
+  sendMessage();
+}
+
+function logout(){
+  window.location.href="login.html";
+}
+</script>
+
+</body>
+</html>
