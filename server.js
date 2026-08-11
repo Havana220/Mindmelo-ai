@@ -41,6 +41,36 @@ const journalSchema = new mongoose.Schema({
 
 const Journal = mongoose.model("Journal", journalSchema, "journals");
 
+
+/* =========================
+   🌱 DAILY CHECK-IN SCHEMA
+========================= */
+
+const checkInSchema = new mongoose.Schema({
+  username: String,
+
+  mood: {
+    type: String,
+    required: true
+  },
+
+  note: {
+    type: String,
+    default: ""
+  },
+
+  date: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+const CheckIn = mongoose.model(
+  "CheckIn",
+  checkInSchema,
+  "checkins"
+);
+
 /* =========================
    🚀 ROUTES
 ========================= */
@@ -254,6 +284,86 @@ app.get("/journal/:username", async (req, res) => {
   } catch (err) {
     res.status(500).json([]);
   }
+});
+
+
+/* =========================
+   🌱 DAILY CHECK-IN
+========================= */
+
+app.post("/checkin", async (req, res) => {
+  try {
+    const { name, mood, note } = req.body;
+
+    // Validate required fields
+    if (!name || !mood) {
+      return res.status(400).json({
+        success: false,
+        message: "Name and mood are required"
+      });
+    }
+
+    // Create check-in
+    const checkIn = new CheckIn({
+      username: name,
+      mood: mood,
+      note: note || ""
+    });
+
+    // Save to MongoDB
+    await checkIn.save();
+
+    console.log("✅ Check-in saved:", checkIn);
+
+    res.json({
+      success: true,
+      message: "Check-in saved successfully",
+      checkIn: checkIn
+    });
+
+  } catch (err) {
+    console.log("❌ Check-in Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Could not save check-in"
+    });
+  }
+});
+
+
+// =====================================
+// 🌱 GET DAILY CHECK-INS
+// =====================================
+
+app.get("/checkins/:username", async (req, res) => {
+
+  try {
+
+    const username = req.params.username;
+
+    const checkIns = await CheckIn
+      .find({ username: username })
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: checkIns.length,
+      checkIns: checkIns
+    });
+
+  } catch (err) {
+
+    console.log("❌ Get Check-Ins Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Could not fetch check-ins",
+      checkIns: []
+    });
+
+  }
+
 });
 
 /* =========================

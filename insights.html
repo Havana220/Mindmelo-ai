@@ -249,6 +249,118 @@
       }
     }
 
+
+    /* 🌱 CHECK-IN INSIGHTS */
+
+.checkin-section {
+  margin-top: 25px;
+  padding: 28px;
+
+  background: rgba(255,255,255,0.75);
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 12px 35px rgba(90,70,120,0.08);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.section-title > span {
+  font-size: 30px;
+}
+
+.section-title h2 {
+  margin: 0;
+  color: #514366;
+}
+
+.section-title p {
+  margin: 5px 0 0;
+  color: #8d8299;
+  font-size: 13px;
+}
+
+.checkin-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 18px;
+
+  background: #faf7fc;
+
+  border-radius: 18px;
+}
+
+.summary-card > span {
+  font-size: 27px;
+}
+
+.summary-card small {
+  display: block;
+  color: #91869d;
+  margin-bottom: 5px;
+}
+
+.summary-card strong {
+  color: #554768;
+  font-size: 20px;
+}
+
+.checkin-history h3 {
+  color: #554768;
+  margin-bottom: 12px;
+}
+
+.checkin-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 15px;
+
+  margin-bottom: 10px;
+
+  background: #fff;
+
+  border-radius: 15px;
+
+  border: 1px solid #eee6f3;
+}
+
+.checkin-mood {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkin-mood-emoji {
+  font-size: 25px;
+}
+
+.checkin-note-preview {
+  color: #71677b;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.checkin-time {
+  color: #9b91a4;
+  font-size: 11px;
+}
   </style>
 </head>
 
@@ -363,6 +475,48 @@
 
     </section>
 
+
+    <div class="insight-section checkin-section">
+
+  <div class="section-title">
+    <span>🌱</span>
+    <div>
+      <h2>Your Check-In Journey</h2>
+      <p>Your small moments of reflection, over time.</p>
+    </div>
+  </div>
+
+  <div class="checkin-summary">
+
+    <div class="summary-card">
+      <span>🌱</span>
+      <div>
+        <small>Total Check-Ins</small>
+        <strong id="totalCheckins">0</strong>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <span>💭</span>
+      <div>
+        <small>Most Common Mood</small>
+        <strong id="commonCheckinMood">—</strong>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="checkin-history">
+
+    <h3>Recent Check-Ins</h3>
+
+    <div id="checkinHistory">
+      <p>Loading your check-ins...</p>
+    </div>
+
+  </div>
+
+</div>
 
     <!-- =========================
          CHARTS
@@ -864,6 +1018,297 @@
 
   loadInsights();
 
+
+// =====================================
+// 🌱 LOAD DAILY CHECK-IN INSIGHTS
+// =====================================
+
+async function loadCheckinInsights() {
+
+  const username =
+    localStorage.getItem("username");
+
+  if (!username) {
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      `http://localhost:5000/checkins/${encodeURIComponent(username)}`
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(
+        data.message || "Could not load check-ins"
+      );
+    }
+
+
+    const checkIns = data.checkIns || [];
+
+
+    // -----------------------------
+    // TOTAL CHECK-INS
+    // -----------------------------
+
+    const totalElement =
+      document.getElementById("totalCheckins");
+
+    if (totalElement) {
+      totalElement.innerText = checkIns.length;
+    }
+
+
+    // -----------------------------
+    // MOST COMMON MOOD
+    // -----------------------------
+
+    const moodElement =
+      document.getElementById("commonCheckinMood");
+
+
+    const moodCounts = {};
+
+    checkIns.forEach(checkIn => {
+
+      const mood = checkIn.mood;
+
+      if (!mood) return;
+
+      moodCounts[mood] =
+        (moodCounts[mood] || 0) + 1;
+
+    });
+
+
+    let mostCommonMood = null;
+    let highestCount = 0;
+
+    Object.entries(moodCounts).forEach(
+      ([mood, count]) => {
+
+        if (count > highestCount) {
+
+          highestCount = count;
+          mostCommonMood = mood;
+
+        }
+
+      }
+    );
+
+
+    if (moodElement) {
+
+      if (mostCommonMood) {
+
+        moodElement.innerText =
+          formatCheckinMood(mostCommonMood);
+
+      } else {
+
+        moodElement.innerText = "—";
+
+      }
+
+    }
+
+
+    // -----------------------------
+    // RECENT CHECK-INS
+    // -----------------------------
+
+    const historyElement =
+      document.getElementById("checkinHistory");
+
+    if (!historyElement) {
+      return;
+    }
+
+
+    if (checkIns.length === 0) {
+
+      historyElement.innerHTML = `
+        <p>
+          No check-ins yet. Your first one can start today 🌱
+        </p>
+      `;
+
+      return;
+
+    }
+
+
+    historyElement.innerHTML =
+      checkIns
+        .slice(0, 5)
+        .map(checkIn => {
+
+          const mood =
+            formatCheckinMood(checkIn.mood);
+
+          const date =
+            checkIn.createdAt || checkIn.date;
+
+          const formattedDate =
+            date
+              ? new Date(date).toLocaleString(
+                  "en-IN",
+                  {
+                    day: "numeric",
+                    month: "short",
+                    hour: "numeric",
+                    minute: "2-digit"
+                  }
+                )
+              : "";
+
+
+          const note =
+            checkIn.note
+              ? escapeHTML(checkIn.note)
+              : "No note added";
+
+
+          return `
+            <div class="checkin-item">
+
+              <div class="checkin-mood">
+
+                <div class="checkin-mood-emoji">
+                  ${getCheckinEmoji(checkIn.mood)}
+                </div>
+
+                <div>
+
+                  <strong>
+                    ${mood}
+                  </strong>
+
+                  <div class="checkin-note-preview">
+                    ${note}
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div class="checkin-time">
+                ${formattedDate}
+              </div>
+
+            </div>
+          `;
+
+        })
+        .join("");
+
+
+  } catch (error) {
+
+    console.error(
+      "❌ Check-in insights error:",
+      error
+    );
+
+    const historyElement =
+      document.getElementById("checkinHistory");
+
+    if (historyElement) {
+
+      historyElement.innerHTML = `
+        <p>
+          Unable to load your check-ins right now 💙
+        </p>
+      `;
+
+    }
+
+  }
+
+}
+
+
+// =====================================
+// MOOD FORMATTING
+// =====================================
+
+function formatCheckinMood(mood) {
+
+  const moods = {
+
+    happy: "Happy 😊",
+    great: "Great 😊",
+
+    okay: "Okay 🙂",
+    neutral: "Okay 🙂",
+
+    low: "Low 😔",
+    sad: "Sad 💙",
+
+    stressed: "Stressed 😓",
+
+    numb: "Numb 😶",
+
+    tired: "Tired 😴"
+
+  };
+
+  return moods[mood] || mood;
+
+}
+
+
+function getCheckinEmoji(mood) {
+
+  const emojis = {
+
+    happy: "😊",
+    great: "😊",
+
+    okay: "🙂",
+    neutral: "🙂",
+
+    low: "😔",
+    sad: "💙",
+
+    stressed: "😓",
+
+    numb: "😶",
+
+    tired: "😴"
+
+  };
+
+  return emojis[mood] || "🌱";
+
+}
+
+
+// =====================================
+// BASIC HTML SAFETY
+// =====================================
+
+function escapeHTML(text) {
+
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+// =====================================
+// START CHECK-IN INSIGHTS
+// =====================================
+
+loadCheckinInsights();
 </script>
 
 </body>

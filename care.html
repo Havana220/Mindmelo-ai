@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>MindMelo | Care Hub</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(
+        135deg,
+        #e3f2fd,
+        #f3e5f5,
+        #fce4ec
+      );
+      color: #514568;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    header {
+      height: 76px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(15px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 7%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: 700;
+      color: #5b4b7a;
+    }
+
+    .logo span {
+      color: #4285f4;
+    }
+
+    .back-btn {
+      border: none;
+      padding: 11px 20px;
+      border-radius: 25px;
+      background: linear-gradient(90deg, #b3e5fc, #e1bee7);
+      color: #4d4165;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(100, 80, 130, 0.18);
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    main {
+      width: min(1100px, 92%);
+      margin: 45px auto 60px;
+    }
+
+    .hero {
+      margin-bottom: 30px;
+    }
+
+    .hero h1 {
+      font-size: 38px;
+      color: #4e4268;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      color: #817694;
+      font-size: 16px;
+    }
+
+    /* =========================
+       MOOD BANNER
+    ========================= */
+
+    .mood-banner {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(15px);
+      border-radius: 24px;
+      padding: 25px 30px;
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 12px 35px rgba(92, 73, 120, 0.10);
+    }
+
+    .mood-info h2 {
+      font-size: 21px;
+      margin-bottom: 7px;
+    }
+
+    .mood-info p {
+      color: #877b96;
+      font-size: 14px;
+    }
+
+    .current-mood {
+      text-align: center;
+      min-width: 130px;
+    }
+
+    .current-mood .emoji {
+      font-size: 38px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .current-mood strong {
+      font-size: 17px;
+      color: #5b4b75;
+    }
+
+    /* =========================
+       SECTION TITLE
+    ========================= */
+
+    .section-title {
+      font-size: 23px;
+      margin: 35px 0 18px;
+      color: #55486d;
+    }
+
+    /* =========================
+       CARE CARDS
+    ========================= */
+
+    .care-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .care-card {
+      background: rgba(255, 255, 255, 0.82);
+      border-radius: 22px;
+      padding: 25px;
+      min-height: 220px;
+      box-shadow: 0 10px 30px rgba(92, 73, 120, 0.09);
+      transition: 0.25s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .care-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(92, 73, 120, 0.14);
+    }
+
+    .card-icon {
+      width: 55px;
+      height: 55px;
+      border-radius: 17px;
+      background: linear-gradient(135deg, #b3e5fc, #e1bee7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 27px;
+      margin-bottom: 16px;
+    }
+
+    .care-card h3 {
+      font-size: 19px;
+      margin-bottom: 8px;
+      color: #55476c;
+    }
+
+    .care-card p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #82768f;
+      flex: 1;
+    }
+
+    .care-btn {
+      border: none;
+      margin-top: 18px;
+      padding: 11px 16px;
+      border-radius: 13px;
+      background: #eee4f7;
+      color: #5a4b73;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .care-btn:hover {
+      background: #dfcef0;
+    }
+
+    /* =========================
+       BREATHING
+    ========================= */
+
+    .breathing-section {
+      display: none;
+      background: rgba(255, 255, 255, 0.86);
+      border-radius: 25px;
+      padding: 35px;
+      margin-top: 25px;
+      text-align: center;
+      box-shadow: 0 12px 35px rgba(92, 73, 120, 0.10);
+    }
+
+    .breathing-section.active {
+      display: block;
+    }
+
+    .breathing-circle {
+      width: 150px;
+      height: 150px;
+      margin: 25px auto;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #b3e5fc, #d8c3ed);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: #55466c;
+      box-shadow: 0 0 0 15px rgba(179, 229, 252, 0.18);
+    }
+
+    .breathing-circle.inhale {
+      animation: breatheIn 4s ease-in-out;
+    }
+
+    .breathing-circle.exhale {
+      animation: breatheOut 4s ease-in-out;
+    }
+
+    @keyframes breatheIn {
+      from {
+        transform: scale(0.75);
+      }
+
+      to {
+        transform: scale(1.15);
+      }
+    }
+
+    @keyframes breatheOut {
+      from {
+        transform: scale(1.15);
+      }
+
+      to {
+        transform: scale(0.75);
+      }
+    }
+
+    .breathing-status {
+      font-size: 17px;
+      margin-bottom: 15px;
+      color: #685a7b;
+    }
+
+    .timer {
+      color: #8c7da0;
+      margin-bottom: 15px;
+    }
+
+    .primary-btn {
+      border: none;
+      padding: 12px 25px;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #b3e5fc, #dcb9e8);
+      color: #514365;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* =========================
+       GROUNDING
+    ========================= */
+
+    .grounding-section {
+      display: none;
+      background: rgba(255, 255, 255, 0.86);
+      border-radius: 25px;
+      padding: 30px;
+      margin-top: 25px;
+      box-shadow: 0 12px 35px rgba(92, 73, 120, 0.10);
+    }
+
+    .grounding-section.active {
+      display: block;
+    }
+
+    .grounding-step {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 15px;
+      background: #f8f3fb;
+    }
+
+    .step-number {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #d9c6ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #5b4b70;
+      flex-shrink: 0;
+    }
+
+    /* =========================
+       QUICK RESET
+    ========================= */
+
+    .reset-box {
+      background: linear-gradient(
+        135deg,
+        rgba(179, 229, 252, 0.75),
+        rgba(225, 190, 231, 0.75)
+      );
+      border-radius: 25px;
+      padding: 30px;
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .reset-box h2 {
+      margin-bottom: 8px;
+    }
+
+    .reset-box p {
+      color: #665b73;
+      margin-bottom: 20px;
+    }
+
+    .reset-message {
+      min-height: 25px;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #58496c;
+    }
+
+    /* =========================
+       PERSONALIZED CARE
+    ========================= */
+
+    .suggestion {
+      margin-top: 30px;
+      background: rgba(255, 255, 255, 0.82);
+      border-radius: 22px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(92, 73, 120, 0.08);
+    }
+
+    .suggestion h2 {
+      margin-bottom: 10px;
+    }
+
+    .suggestion p {
+      color: #766a82;
+      line-height: 1.7;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 800px) {
+      .care-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mood-banner {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+
+      .hero h1 {
+        font-size: 30px;
+      }
+    }
+
+    @media (max-width: 500px) {
+      header {
+        padding: 0 5%;
+      }
+
+      .logo {
+        font-size: 21px;
+      }
+
+      .back-btn {
+        padding: 9px 13px;
+      }
+
+      main {
+        width: 90%;
+        margin-top: 30px;
+      }
+
+      .care-card {
+        min-height: auto;
+      }
+    }
+
+    /* =========================
+   🎵 CALM SESSION
+========================= */
+
+.calm-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(54, 42, 75, 0.35);
+  backdrop-filter: blur(8px);
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 1000;
+}
+
+.calm-card {
+  position: relative;
+
+  width: 430px;
+  max-width: 90%;
+
+  padding: 35px;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  border-radius: 28px;
+
+  box-shadow:
+    0 20px 60px rgba(70, 50, 100, 0.25);
+
+  text-align: center;
+
+  animation: calmAppear 0.3s ease;
+}
+
+@keyframes calmAppear {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.close-calm {
+  position: absolute;
+
+  top: 15px;
+  right: 18px;
+
+  border: none;
+  background: transparent;
+
+  font-size: 28px;
+
+  color: #66557a;
+
+  cursor: pointer;
+}
+
+.calm-icon {
+  width: 70px;
+  height: 70px;
+
+  margin: 0 auto 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 22px;
+
+  background: linear-gradient(
+    135deg,
+    #b3e5fc,
+    #e1bee7
+  );
+
+  font-size: 35px;
+}
+
+.calm-card h2 {
+  margin: 5px 0 8px;
+
+  color: #4f4268;
+
+  font-size: 28px;
+}
+
+.calm-subtitle {
+  color: #7d718c;
+
+  line-height: 1.6;
+
+  margin-bottom: 25px;
+}
+
+/* Sound choices */
+
+.sound-options {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 10px;
+
+  margin-bottom: 20px;
+}
+
+.sound-btn {
+  border: 1px solid #eadff1;
+
+  background: #faf7fc;
+
+  border-radius: 15px;
+
+  padding: 12px 5px;
+
+  cursor: pointer;
+
+  color: #66557a;
+
+  transition: 0.2s;
+}
+
+.sound-btn:hover {
+  transform: translateY(-2px);
+}
+
+.sound-btn.active {
+  background: linear-gradient(
+    135deg,
+    #b3e5fc,
+    #e1bee7
+  );
+
+  border-color: transparent;
+
+  color: #4f4268;
+}
+
+.sound-btn span {
+  display: block;
+
+  margin-top: 5px;
+
+  font-size: 12px;
+}
+
+/* Selected sound */
+
+.selected-sound {
+  color: #66557a;
+
+  font-weight: 600;
+
+  margin-bottom: 10px;
+}
+
+/* Timer */
+
+.calm-timer {
+  font-size: 52px;
+
+  font-weight: 700;
+
+  color: #55466d;
+
+  margin: 10px 0;
+}
+
+#calmMessage {
+  color: #81758f;
+
+  min-height: 24px;
+
+  margin-bottom: 22px;
+}
+
+/* Buttons */
+
+.calm-actions {
+  display: flex;
+
+  gap: 10px;
+
+  justify-content: center;
+}
+
+.calm-start-btn,
+.calm-reset-btn {
+  border: none;
+
+  padding: 12px 25px;
+
+  border-radius: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.calm-start-btn {
+  background: linear-gradient(
+    90deg,
+    #b3e5fc,
+    #e1bee7
+  );
+
+  color: #4f4268;
+}
+
+.calm-reset-btn {
+  background: #f1e7f5;
+
+  color: #66557a;
+}
+
+.calm-start-btn:hover,
+.calm-reset-btn:hover {
+  transform: translateY(-2px);
+}
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       HEADER
+  ========================= -->
+
+  <header>
+
+    <div class="logo">
+      MindMelo <span>💙</span>
+    </div>
+
+    <button class="back-btn" onclick="goDashboard()">
+      ← Dashboard
+    </button>
+
+  </header>
+
+
+  <!-- =========================
+       MAIN
+  ========================= -->
+
+  <main>
+
+    <div class="hero">
+      <h1>Your Care Hub 🌱</h1>
+      <p>
+        Small steps to help you feel a little more grounded.
+      </p>
+    </div>
+
+
+    <!-- =========================
+         CURRENT MOOD
+    ========================= -->
+
+    <div class="mood-banner">
+
+      <div class="mood-info">
+        <h2>A moment just for you 💙</h2>
+
+        <p id="moodMessage">
+          Let's take a moment to check in with yourself.
+        </p>
+      </div>
+
+      <div class="current-mood">
+
+        <span class="emoji" id="moodEmoji">
+          🌱
+        </span>
+
+        <strong id="currentMood">
+          Checking in...
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         WELLNESS TOOLS
+    ========================= -->
+
+    <h2 class="section-title">
+      🌸 Wellness Tools
+    </h2>
+
+    <div class="care-grid">
+
+
+      <!-- BREATHING -->
+
+      <div class="care-card">
+
+        <div class="card-icon">
+          🌬️
+        </div>
+
+        <h3>Take a Breath</h3>
+
+        <p>
+          Slow down for a moment with a simple guided breathing exercise.
+        </p>
+
+        <button class="care-btn" onclick="openBreathing()">
+          Start Breathing
+        </button>
+
+      </div>
+
+
+      <!-- GROUNDING -->
+
+      <div class="care-card">
+
+        <div class="card-icon">
+          🧘
+        </div>
+
+        <h3>Ground Yourself</h3>
+
+        <p>
+          A gentle 5-4-3-2-1 grounding exercise to bring your attention
+          back to the present moment.
+        </p>
+
+        <button class="care-btn" onclick="openGrounding()">
+          Start Grounding
+        </button>
+
+      </div>
+
+
+      <!-- QUICK RESET -->
+
+      <!-- CALM YOUR MIND -->
+
+<div class="care-card">
+
+    <div class="card-icon">
+        🎵
+    </div>
+
+    <h3>Calm Your Mind</h3>
+
+    <p>
+        Take a short mindful pause with a calming soundscape
+        and gentle focus exercise.
+    </p>
+
+    <button class="care-btn" onclick="openCalmSession()">
+        Start Calm Session
+    </button>
+
+</div>
+
+    </div>
+
+
+    <!-- =========================
+         BREATHING TOOL
+    ========================= -->
+
+    <div class="breathing-section" id="breathingSection">
+
+      <h2>🌬️ Let's breathe together</h2>
+
+      <p class="breathing-status" id="breathingStatus">
+        Press start when you're ready.
+      </p>
+
+      <div class="breathing-circle" id="breathingCircle">
+        Ready
+      </div>
+
+      <div class="timer">
+        Time remaining: <span id="breathingTimer">60</span>s
+      </div>
+
+      <button
+        class="primary-btn"
+        id="breathingButton"
+        onclick="startBreathing()"
+      >
+        Start
+      </button>
+
+    </div>
+
+
+    <!-- =========================
+         GROUNDING TOOL
+    ========================= -->
+
+    <div class="grounding-section" id="groundingSection">
+
+      <h2>🧘 5-4-3-2-1 Grounding</h2>
+
+      <p style="margin-top: 8px; color: #81758c;">
+        Take your time. There is no need to rush.
+      </p>
+
+      <div class="grounding-step">
+        <div class="step-number">5</div>
+
+        <div>
+          <strong>Look around.</strong>
+          <br>
+          Name 5 things you can see.
+        </div>
+      </div>
+
+      <div class="grounding-step">
+        <div class="step-number">4</div>
+
+        <div>
+          <strong>Notice your surroundings.</strong>
+          <br>
+          Name 4 things you can touch.
+        </div>
+      </div>
+
+      <div class="grounding-step">
+        <div class="step-number">3</div>
+
+        <div>
+          <strong>Listen carefully.</strong>
+          <br>
+          Name 3 things you can hear.
+        </div>
+      </div>
+
+      <div class="grounding-step">
+        <div class="step-number">2</div>
+
+        <div>
+          <strong>Notice the air.</strong>
+          <br>
+          Name 2 things you can smell.
+        </div>
+      </div>
+
+      <div class="grounding-step">
+        <div class="step-number">1</div>
+
+        <div>
+          <strong>Take one gentle breath.</strong>
+          <br>
+          Notice one thing you appreciate right now.
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         QUICK RESET
+    ========================= -->
+
+    <div class="reset-box">
+
+      <h2>✨ Your tiny reset</h2>
+
+      <p>
+        You don't need to fix everything right now.
+        Sometimes one small action is enough.
+      </p>
+
+      <button class="primary-btn" onclick="quickReset()">
+        Give Me a Reset
+      </button>
+
+      <div class="reset-message" id="resetMessage"></div>
+
+    </div>
+
+    <!-- =========================
+     CALM SESSION MODAL
+========================= -->
+
+<div id="calmModal" class="calm-modal">
+
+  <div class="calm-card">
+
+    <button class="close-calm" onclick="closeCalmSession()">×</button>
+
+    <div class="calm-icon">🌿</div>
+
+    <h2>Calm Your Mind</h2>
+
+    <p class="calm-subtitle">
+      Choose a peaceful soundscape and give yourself a few quiet minutes.
+    </p>
+
+    <!-- Sound choices -->
+
+    <div class="sound-options">
+
+      <button class="sound-btn active" onclick="selectSound(this, '🌧️ Rain')">
+        🌧️
+        <span>Rain</span>
+      </button>
+
+      <button class="sound-btn" onclick="selectSound(this, '🌊 Ocean')">
+        🌊
+        <span>Ocean</span>
+      </button>
+
+      <button class="sound-btn" onclick="selectSound(this, '🌲 Forest')">
+        🌲
+        <span>Forest</span>
+      </button>
+
+      <button class="sound-btn" onclick="selectSound(this, '🎵 Ambient')">
+        🎵
+        <span>Ambient</span>
+      </button>
+
+    </div>
+
+    <div class="selected-sound" id="selectedSound">
+      🌧️ Rain
+    </div>
+
+    <!-- Timer -->
+
+    <div class="calm-timer" id="calmTimer">
+      02:00
+    </div>
+
+    <p id="calmMessage">
+      Let your shoulders relax and take a slow breath.
+    </p>
+
+    <div class="calm-actions">
+
+      <button
+        class="calm-start-btn"
+        id="calmStartButton"
+        onclick="startCalmTimer()">
+        ▶ Start
+      </button>
+
+      <button
+        class="calm-reset-btn"
+        onclick="resetCalmTimer()">
+        ↻ Reset
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+    <!-- =========================
+         PERSONALIZED SUGGESTION
+    ========================= -->
+
+    <div class="suggestion">
+
+      <h2>💙 A little note for you</h2>
+
+      <p id="personalSuggestion">
+        Whatever you're feeling right now, you don't have to figure
+        everything out at once. One small step is enough.
+      </p>
+
+    </div>
+
+  </main>
+
+
+  <script>
+
+    /* =========================
+       LOGIN CHECK
+    ========================= */
+
+    if (!localStorage.getItem("username")) {
+      window.location.href = "login.html";
+    }
+
+
+    /* =========================
+       DASHBOARD
+    ========================= */
+
+    function goDashboard() {
+      window.location.href = "dashboard.html";
+    }
+
+
+    /* =========================
+       GET CURRENT MOOD
+    ========================= */
+
+    function getCurrentMood() {
+
+      let history =
+        JSON.parse(localStorage.getItem("moodHistory")) || [];
+
+      if (!history.length) {
+        return "neutral";
+      }
+
+      let lastMood = history[history.length - 1];
+
+      /*
+        Handles both:
+
+        "stressed"
+
+        and emoji values from older versions.
+      */
+
+      if (
+        lastMood === "😓" ||
+        lastMood === "stressed"
+      ) {
+        return "stressed";
+      }
+
+      if (
+        lastMood === "💙" ||
+        lastMood === "sad"
+      ) {
+        return "sad";
+      }
+
+      if (
+        lastMood === "😊" ||
+        lastMood === "happy"
+      ) {
+        return "happy";
+      }
+
+      return "neutral";
+    }
+
+
+    /* =========================
+       UPDATE MOOD UI
+    ========================= */
+
+    function updateMoodUI() {
+
+      const mood = getCurrentMood();
+
+      const emoji =
+        document.getElementById("moodEmoji");
+
+      const moodText =
+        document.getElementById("currentMood");
+
+      const message =
+        document.getElementById("moodMessage");
+
+      const suggestion =
+        document.getElementById("personalSuggestion");
+
+
+      if (mood === "happy") {
+
+        emoji.innerText = "😊";
+        moodText.innerText = "Feeling Happy";
+
+        message.innerText =
+          "That's lovely. Give yourself permission to enjoy this moment.";
+
+        suggestion.innerText =
+          "Hold onto this feeling for a little while. You could write down what made today feel good or share the positive energy with someone you care about.";
+
+      }
+
+      else if (mood === "sad") {
+
+        emoji.innerText = "💙";
+        moodText.innerText = "Feeling Low";
+
+        message.innerText =
+          "It's okay to have difficult moments. You don't have to force yourself to feel better immediately.";
+
+        suggestion.innerText =
+          "Be gentle with yourself today. Try the breathing exercise or grounding activity, and remember that a difficult moment doesn't define your whole day.";
+
+      }
+
+      else if (mood === "stressed") {
+
+        emoji.innerText = "😓";
+        moodText.innerText = "Feeling Stressed";
+
+        message.innerText =
+          "Let's slow things down. You don't need to solve everything at once.";
+
+        suggestion.innerText =
+          "Try taking one thing off your mental list for the next minute. The breathing exercise above can help you create a little space before deciding what to do next.";
+
+      }
+
+      else {
+
+        emoji.innerText = "🌱";
+        moodText.innerText = "Taking It Easy";
+
+        message.innerText =
+          "A calm moment is still worth noticing.";
+
+        suggestion.innerText =
+          "Use this space whenever you need a small pause. You can breathe, reflect, or simply give yourself a few quiet minutes.";
+
+      }
+    }
+
+
+    /* =========================
+       BREATHING
+    ========================= */
+
+    let breathingRunning = false;
+    let breathingInterval = null;
+    let breathingTime = 60;
+
+    function openBreathing() {
+
+      document
+        .getElementById("breathingSection")
+        .classList.add("active");
+
+      document
+        .getElementById("groundingSection")
+        .classList.remove("active");
+
+      document
+        .getElementById("breathingSection")
+        .scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+    }
+
+
+    function startBreathing() {
+
+      if (breathingRunning) {
+        return;
+      }
+
+      breathingRunning = true;
+      breathingTime = 60;
+
+      const button =
+        document.getElementById("breathingButton");
+
+      const timer =
+        document.getElementById("breathingTimer");
+
+      const status =
+        document.getElementById("breathingStatus");
+
+      const circle =
+        document.getElementById("breathingCircle");
+
+      button.innerText = "Breathing...";
+
+      let inhale = true;
+
+      function cycle() {
+
+        if (!breathingRunning) {
+          return;
+        }
+
+        circle.classList.remove("inhale", "exhale");
+
+        /*
+          Force browser to restart animation.
+        */
+
+        void circle.offsetWidth;
+
+        if (inhale) {
+
+          circle.classList.add("inhale");
+
+          circle.innerText = "Breathe In";
+
+          status.innerText =
+            "Slowly breathe in...";
+
+        } else {
+
+          circle.classList.add("exhale");
+
+          circle.innerText = "Breathe Out";
+
+          status.innerText =
+            "Slowly breathe out...";
+
+        }
+
+        inhale = !inhale;
+      }
+
+      cycle();
+
+      breathingInterval = setInterval(() => {
+
+        breathingTime--;
+
+        timer.innerText = breathingTime;
+
+        if (breathingTime <= 0) {
+
+          clearInterval(breathingInterval);
+
+          breathingRunning = false;
+
+          circle.classList.remove(
+            "inhale",
+            "exhale"
+          );
+
+          circle.innerText = "🌱";
+
+          status.innerText =
+            "You made space for yourself. Well done.";
+
+          button.innerText =
+            "Start Again";
+
+          breathingTime = 60;
+
+          timer.innerText = "60";
+
+          return;
+        }
+
+        /*
+          Switch breathing phase every 4 seconds.
+        */
+
+        if (breathingTime % 4 === 0) {
+          cycle();
+        }
+
+      }, 1000);
+    }
+
+
+    /* =========================
+       GROUNDING
+    ========================= */
+
+    function openGrounding() {
+
+      document
+        .getElementById("groundingSection")
+        .classList.add("active");
+
+      document
+        .getElementById("breathingSection")
+        .classList.remove("active");
+
+      document
+        .getElementById("groundingSection")
+        .scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+    }
+
+
+    /* =========================
+       QUICK RESET
+    ========================= */
+
+    const resetActions = [
+
+      "Drink a glass of water and take three slow breaths. 💧",
+
+      "Look away from your screen for 30 seconds and notice what's around you. 🌿",
+
+      "Relax your shoulders, unclench your jaw, and take one slow breath. 🌬️",
+
+      "Write down the one thing that is bothering you most right now. 📝",
+
+      "Stretch your arms and shoulders for a few seconds. 🌸",
+
+      "Put your phone down for one minute and simply sit somewhere comfortable. 🧘",
+
+      "Think of one small thing that went okay today. 💙",
+
+      "Take five slow steps and notice how your feet feel against the ground. 🌱"
+
+    ];
+
+
+    function quickReset() {
+
+      const message =
+        document.getElementById("resetMessage");
+
+      const randomIndex =
+        Math.floor(
+          Math.random() * resetActions.length
+        );
+
+      message.innerText =
+        resetActions[randomIndex];
+    }
+
+
+    /* =========================
+       INITIALIZE
+    ========================= */
+
+    updateMoodUI();
+
+
+    /* =========================
+   🎵 CALM SESSION
+========================= */
+
+let calmTime = 120;
+let calmInterval = null;
+let calmRunning = false;
+
+
+/* Open calm session */
+
+function openCalmSession() {
+
+  document.getElementById("calmModal").style.display = "flex";
+
+  resetCalmTimer();
+}
+
+
+/* Close calm session */
+
+function closeCalmSession() {
+
+  document.getElementById("calmModal").style.display = "none";
+
+  resetCalmTimer();
+}
+
+
+/* Select sound */
+
+function selectSound(button, sound) {
+
+  document
+    .querySelectorAll(".sound-btn")
+    .forEach(btn => btn.classList.remove("active"));
+
+  button.classList.add("active");
+
+  document.getElementById("selectedSound").innerText = sound;
+}
+
+
+/* Start timer */
+
+function startCalmTimer() {
+
+  if (calmRunning) return;
+
+  calmRunning = true;
+
+  document.getElementById("calmStartButton").innerText = "⏸ Pause";
+
+  document.getElementById("calmStartButton").onclick = pauseCalmTimer;
+
+  document.getElementById("calmMessage").innerText =
+    "Breathe slowly. You don't need to rush anywhere. 🌿";
+
+  calmInterval = setInterval(() => {
+
+    calmTime--;
+
+    updateCalmTimer();
+
+    if (calmTime <= 0) {
+
+      clearInterval(calmInterval);
+
+      calmRunning = false;
+
+      document.getElementById("calmStartButton").innerText =
+        "✨ Finished";
+
+      document.getElementById("calmStartButton").onclick =
+        resetCalmTimer;
+
+      document.getElementById("calmMessage").innerText =
+        "Beautiful. You gave yourself a quiet moment. 💙";
+    }
+
+  }, 1000);
+}
+
+
+/* Pause timer */
+
+function pauseCalmTimer() {
+
+  clearInterval(calmInterval);
+
+  calmRunning = false;
+
+  document.getElementById("calmStartButton").innerText =
+    "▶ Resume";
+
+  document.getElementById("calmStartButton").onclick =
+    startCalmTimer;
+
+  document.getElementById("calmMessage").innerText =
+    "Paused. Take one comfortable breath before continuing. 🌷";
+}
+
+
+/* Reset timer */
+
+function resetCalmTimer() {
+
+  clearInterval(calmInterval);
+
+  calmTime = 120;
+
+  calmRunning = false;
+
+  updateCalmTimer();
+
+  document.getElementById("calmStartButton").innerText =
+    "▶ Start";
+
+  document.getElementById("calmStartButton").onclick =
+    startCalmTimer;
+
+  document.getElementById("calmMessage").innerText =
+    "Let your shoulders relax and take a slow breath.";
+}
+
+
+/* Update timer display */
+
+function updateCalmTimer() {
+
+  let minutes = Math.floor(calmTime / 60);
+
+  let seconds = calmTime % 60;
+
+  document.getElementById("calmTimer").innerText =
+    String(minutes).padStart(2, "0") +
+    ":" +
+    String(seconds).padStart(2, "0");
+}
+
+  </script>
+
+</body>
+</html>
