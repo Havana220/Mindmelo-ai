@@ -15,6 +15,7 @@
       height: 100vh;
     }
 
+    /* Sidebar */
     .sidebar {
       position: absolute;
       left: 20px;
@@ -30,8 +31,8 @@
       border: none;
       background: #f8bbd0;
       border-radius: 50%;
-      width: 45px;
-      height: 45px;
+      width: 50px;
+      height: 50px;
       cursor: pointer;
       font-size: 18px;
     }
@@ -39,23 +40,28 @@
     .sidebar button::after {
       content: attr(data-label);
       position: absolute;
-      left: 55px;
+      left: 60px;
       top: 50%;
       transform: translateY(-50%);
       background: #333;
-      color: #fff;
+      color: white;
       padding: 5px 10px;
       border-radius: 6px;
-      font-size: 12px;
       opacity: 0;
       transition: 0.2s;
+      font-size: 12px;
       white-space: nowrap;
     }
+    input::placeholder {
+  color: #6a1b9a;
+  font-weight: 500;
+}
 
     .sidebar button:hover::after {
       opacity: 1;
     }
 
+    /* Main */
     .container {
       width: 360px;
       height: 600px;
@@ -64,7 +70,6 @@
       display: flex;
       flex-direction: column;
       backdrop-filter: blur(15px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
 
     .header {
@@ -81,11 +86,6 @@
       right: 10px;
       top: 10px;
       cursor: pointer;
-    }
-
-    #mood {
-      text-align: center;
-      padding: 5px;
     }
 
     #chatbox {
@@ -107,18 +107,6 @@
     .user { background:#d1c4e9; align-self:flex-end; }
     .bot { background:#e1f5fe; align-self:flex-start; }
 
-    .input-area { display: flex; flex-direction: column; }
-
-    .emoji-bar { text-align: center; padding: 5px; }
-
-    .emoji-bar span {
-      cursor: pointer;
-      margin: 5px;
-      font-size: 18px;
-    }
-
-    .bottom { display: flex; }
-
     input {
       flex:1;
       padding:10px;
@@ -134,18 +122,143 @@
       cursor:pointer;
     }
 
+    /* Popups */
     .popup {
-      position:absolute;
-      right:20px;
-      top:60px;
-      width:280px;
-      height:280px;
-      background:#fff;
-      border-radius:15px;
-      display:none;
-      padding:10px;
-      overflow:auto;
-      transition: all 0.2s ease;
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      width: 280px;
+      background: white;
+      border-radius: 15px;
+      display: none;
+      padding: 10px;
+    }
+
+    /* Dashboard */
+    #dashboard {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 400px;
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      display: none;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    /* 🌸 JOURNAL BEAUTIFUL UI */
+.journal-box {
+  width: 350px;
+  height: 500px;
+  right: 20px;
+  top: 50px;
+  padding: 15px;
+  overflow-y: auto;
+  background: #ffffffee;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  border-radius: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.journal-box h2 {
+  text-align: center;
+  margin-bottom: 10px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+#journalText {
+  width: 100%;
+  height: 120px;
+  border-radius: 12px;
+  border: none;
+  padding: 10px;
+  background: #f3e5f5;
+  outline: none;
+  font-size: 14px;
+  resize: none;
+  margin-bottom: 10px;
+}
+
+.save-btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(90deg,#b3e5fc,#e1bee7);
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+#journalList {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+/* Entries */
+.journal-entry {
+  background: #fce4ec;
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  animation: fadeIn 0.3s ease;
+}
+
+.journal-date {
+  font-size: 11px;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.lock-box {
+  width: 300px;
+  padding: 20px;
+  text-align: center;
+  background: #ffffffee;
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.lock-box input {
+  width: 90%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: none;
+  background: #f3e5f5;
+  outline: none;
+}
+
+.lock-box button {
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(90deg,#b3e5fc,#e1bee7);
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.affirmation-box {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ffffffcc;
+  backdrop-filter: blur(10px);
+  padding: 12px 18px;
+  border-radius: 15px;
+  font-size: 13px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  opacity: 0;
+  transition: 0.4s;
+}
+
+    canvas {
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -153,41 +266,35 @@
 <body>
 
 <script>
-if(!localStorage.getItem("user")){
+if(!localStorage.getItem("username")){
   window.location.href="login.html";
 }
 </script>
 
 <!-- Sidebar -->
 <div class="sidebar">
+  <button data-label="Dashboard" onclick="toggleDashboard()">📊</button>
   <button data-label="History" onclick="togglePopup('historyPopup')">📜</button>
   <button data-label="Analysis" onclick="togglePopup('analysisPopup')">🧠</button>
-  <button data-label="Mood Graph" onclick="togglePopup('graphPopup')">📊</button>
+  <button data-label="Profile" onclick="toggleProfile()">👤</button>
+  <button data-label="Journal" onclick="openJournalLock()">📝</button>
   <button data-label="Logout" onclick="logout()">🚪</button>
+  
 </div>
 
 <!-- Main -->
 <div class="container">
   <div class="header">
     Mindmelo 💙
-    <span class="profile-icon" onclick="toggleProfile()">👤</span>
   </div>
 
-  <div id="mood">Mood: 🙂</div>
+  <div id="mood" style="text-align:center;">Mood: 🙂</div>
 
   <div id="chatbox"></div>
 
-  <div class="input-area">
-    <div class="emoji-bar">
-      <span onclick="quickMood('happy')">😊</span>
-      <span onclick="quickMood('sad')">💙</span>
-      <span onclick="quickMood('stress')">😓</span>
-    </div>
-
-    <div class="bottom">
-      <input id="userInput" placeholder="Type your feelings..." />
-      <button class="send" onclick="sendMessage()">Send</button>
-    </div>
+  <div style="display:flex;">
+    <input id="userInput" placeholder="Type your feelings..." />
+    <button class="send" onclick="sendMessage()">Send</button>
   </div>
 </div>
 
@@ -202,133 +309,172 @@ if(!localStorage.getItem("user")){
   <div id="analysis"></div>
 </div>
 
-<div id="graphPopup" class="popup">
-  <h3>📊 Mood Graph</h3>
-  <canvas id="moodChart"></canvas>
-</div>
-
 <div id="profilePopup" class="popup">
   <h3>👤 Profile</h3>
   <p>Name: <span id="pname"></span></p>
   <p>Age: <span id="page"></span></p>
 </div>
 
+<!-- Dashboard -->
+<div id="dashboard">
+  <h2>Mood Insights 📊</h2>
+  <canvas id="barChart"></canvas>
+  <canvas id="lineChart"></canvas>
+</div>
+
+<div id="journalPopup" class="popup journal-box">
+  <h2>📝 Your Safe Space</h2>
+
+  <textarea id="journalText" placeholder="Write your thoughts..."></textarea>
+
+  <button class="save-btn" onclick="saveJournal()">Save Entry</button>
+
+  <div id="journalList"></div>
+</div>
+
+<div id="lockPopup" class="popup lock-box">
+  <h2>🔒 Secure Journal</h2>
+
+  <p id="lockText">Enter your PIN</p>
+
+  <input type="password" id="journalPin" placeholder="Enter PIN" />
+
+  <button onclick="handlePin()">Continue</button>
+</div>
+
+<div id="affirmationBox" class="affirmation-box"></div>
+
 <script>
+
 let moodHistory=[];
 let moodScores=[];
-let chart;
-let profileOpen=false;
+let chart1, chart2;
 let currentPopup=null;
+let profileOpen=false;
 
-window.onload = function(){
-  document.getElementById("userInput").addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
-      sendMessage();
-    }
-  });
-};
+// Enter key
+document.getElementById("userInput").addEventListener("keydown", e=>{
+  if(e.key==="Enter") sendMessage();
+});
 
+// SEND MESSAGE
 async function sendMessage(){
   let input=document.getElementById("userInput").value.trim();
   if(!input) return;
 
   let chatbox=document.getElementById("chatbox");
+  const username=localStorage.getItem("username")||"Friend";
 
   chatbox.innerHTML+=`<div class="msg user">${input}</div>`;
   document.getElementById("userInput").value="";
 
-  detectMood(input);
-
   chatbox.innerHTML+=`<div class="msg bot" id="typing">Typing...</div>`;
 
-  try{
-    let res=await fetch("http://localhost:5000/chat",{
-      method:"POST",
-      headers:{ "Content-Type":"application/json"},
-      body:JSON.stringify({message:input})
-    });
+  let res=await fetch("http://localhost:5000/chat",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json"},
+    body:JSON.stringify({message:input,name:username})
+  });
 
-    let data=await res.json();
+  let data=await res.json();
+  document.getElementById("typing")?.remove();
 
-    document.getElementById("typing")?.remove();
+  chatbox.innerHTML+=`<div class="msg bot">${data.reply}</div>`;
+  chatbox.scrollTop=chatbox.scrollHeight;
 
-    chatbox.innerHTML+=`<div class="msg bot">${data.reply}</div>`;
-    chatbox.scrollTop=chatbox.scrollHeight;
-
-  }catch{
-    document.getElementById("typing")?.remove();
-    chatbox.innerHTML+=`<div class="msg bot">Error connecting 💔</div>`;
-  }
+  updateMood(data.mood);
+  showAffirmation(data.affirmation);
+  localStorage.setItem("moodHistory", JSON.stringify(data.moodHistory));
 }
 
-function detectMood(text){
-  let mood="🙂";
-  let score=3;
+// MOOD
+function updateMood(mood){
+  let emoji="🙂", score=3;
 
-  text=text.toLowerCase();
+  if(mood==="happy"){ emoji="😊"; score=5; }
+  else if(mood==="sad"){ emoji="💙"; score=2; }
+  else if(mood==="stressed"){ emoji="😓"; score=1; }
 
-  if(text.includes("happy")||text.includes("good")){
-    mood="😊"; score=5;
-  }
-  else if(text.includes("sad")||text.includes("depressed")){
-    mood="💙"; score=2;
-  }
-  else if(text.includes("stress")||text.includes("anxious")){
-    mood="😓"; score=1;
-  }
+  document.getElementById("mood").innerText="Mood: "+emoji;
 
-  document.getElementById("mood").innerText="Mood: "+mood;
-
-  moodHistory.push(mood);
+  moodHistory.push(emoji);
   moodScores.push(score);
 
   document.getElementById("history").innerText=moodHistory.join(" → ");
 
-  analyzeMentalState();
-  updateChart();
+  analyze();
 }
 
-function analyzeMentalState(){
+// ANALYSIS
+function analyze(){
   let avg=moodScores.reduce((a,b)=>a+b,0)/moodScores.length;
 
   let msg="";
-
-  if(avg>=4) msg="😊 You seem positive overall!";
-  else if(avg>=2) msg="🙂 Mixed emotions detected.";
-  else msg="💙 You might be stressed. Take care.";
+  if(avg>=4) msg="😊 Positive mood overall!";
+  else if(avg>=2) msg="🙂 Mixed emotions.";
+  else msg="💙 You may be stressed.";
 
   document.getElementById("analysis").innerText=msg;
 }
 
-function updateChart(){
-  const ctx=document.getElementById("moodChart");
+// DASHBOARD
+function toggleDashboard(){
+  let d=document.getElementById("dashboard");
 
-  if(chart) chart.destroy();
+  if(d.style.display==="block"){
+    d.style.display="none";
+  } else {
+    d.style.display="block";
+    renderCharts();
+  }
+}
 
-  chart=new Chart(ctx,{
-    type:'line',
+function renderCharts(){
+  let history=JSON.parse(localStorage.getItem("moodHistory"))||[];
+
+  let counts={happy:0,sad:0,stressed:0,neutral:0};
+  history.forEach(m=>counts[m]++);
+
+  if(chart1) chart1.destroy();
+  if(chart2) chart2.destroy();
+
+  chart1=new Chart(document.getElementById("barChart"),{
+    type:"bar",
+    data:{
+      labels:["Happy","Sad","Stressed","Neutral"],
+      datasets:[{data:Object.values(counts)}]
+    }
+  });
+
+  chart2=new Chart(document.getElementById("lineChart"),{
+    type:"line",
     data:{
       labels:moodScores.map((_,i)=>i+1),
-      datasets:[{ data:moodScores }]
+      datasets:[{data:moodScores}]
     }
   });
 }
 
+// POPUPS
 function togglePopup(id){
-  let popup=document.getElementById(id);
+  let p=document.getElementById(id);
 
   if(currentPopup===id){
-    popup.style.display="none";
+    p.style.display="none";
     currentPopup=null;
     return;
   }
 
-  document.querySelectorAll(".popup").forEach(p=>p.style.display="none");
-
-  popup.style.display="block";
+  document.querySelectorAll(".popup").forEach(x=>x.style.display="none");
+  p.style.display="block";
   currentPopup=id;
+
+   if(id==="journalPopup"){
+    loadJournal();
+  }
 }
 
+// PROFILE
 function toggleProfile(){
   let p=document.getElementById("profilePopup");
 
@@ -339,19 +485,129 @@ function toggleProfile(){
     p.style.display="block";
     profileOpen=true;
 
-    document.getElementById("pname").innerText=localStorage.getItem("user");
+    document.getElementById("pname").innerText=localStorage.getItem("username");
     document.getElementById("page").innerText=localStorage.getItem("age");
   }
 }
 
-function quickMood(type){
-  document.getElementById("userInput").value=type;
-  sendMessage();
-}
-
+// LOGOUT
 function logout(){
   window.location.href="login.html";
 }
+
+//jounal lock
+function openJournalLock(){
+  // 👉 If already open → CLOSE EVERYTHING
+  if(currentPopup === "lockPopup" || currentPopup === "journalPopup"){
+    document.querySelectorAll(".popup").forEach(p => p.style.display = "none");
+    currentPopup = null;
+    return;
+  }
+
+  let savedPin = localStorage.getItem("journalPin");
+
+  document.querySelectorAll(".popup").forEach(p => p.style.display = "none");
+
+  document.getElementById("lockPopup").style.display = "block";
+  currentPopup = "lockPopup";
+
+  if(!savedPin){
+    document.getElementById("lockText").innerText = "Set a PIN for your journal";
+  } else {
+    document.getElementById("lockText").innerText = "Enter your PIN";
+  }
+}
+
+function handlePin(){
+  let inputPin = document.getElementById("journalPin").value;
+  let savedPin = localStorage.getItem("journalPin");
+
+  if(!inputPin) return;
+
+  // First time → set PIN
+  if(!savedPin){
+    localStorage.setItem("journalPin", inputPin);
+    alert("PIN set successfully 🔒");
+
+    openJournal();
+    return;
+  }
+
+  // Check PIN
+  if(inputPin === savedPin){
+    openJournal();
+  } else {
+    alert("Wrong PIN ❌");
+  }
+}
+
+//jounal functions
+function openJournal(){
+  document.getElementById("lockPopup").style.display = "none";
+
+  document.getElementById("journalPopup").style.display = "block";
+  currentPopup = "journalPopup";
+
+  document.getElementById("journalPin").value = "";
+
+  loadJournal();
+}
+
+async function saveJournal() {
+  let text = document.getElementById("journalText").value;
+  let username = localStorage.getItem("username") || "Friend";
+
+  if (!text) return;
+
+  await fetch("http://localhost:5000/journal", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: username,
+      text: text
+    })
+  });
+
+  document.getElementById("journalText").value = "";
+
+  loadJournal();
+  showAffirmation();
+}
+
+async function loadJournal() {
+  let username = localStorage.getItem("username") || "Friend";
+
+  let res = await fetch(`http://localhost:5000/journal/${username}`);
+  let data = await res.json();
+
+  let html = "";
+
+  data.reverse().forEach(entry => {
+    let date = new Date(entry.date).toLocaleString();
+
+    html += `
+      <div class="journal-entry">
+        <div class="journal-date">${date}</div>
+        <div>${entry.text}</div>
+      </div>
+    `;
+  });
+
+  document.getElementById("journalList").innerHTML = html;
+}
+
+function showAffirmation(text){
+  let box = document.getElementById("affirmationBox");
+
+  box.innerText = text || "You're doing okay 💙";
+
+  box.style.opacity = 1;
+
+  setTimeout(()=>{
+    box.style.opacity = 0;
+  }, 3000);
+}
+
 </script>
 
 </body>

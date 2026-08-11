@@ -115,7 +115,9 @@
 
   <h3 id="title">Login</h3>
 
-  <input id="username" placeholder="Username">
+<label>Name / Nickname (optional)</label>
+<input type="text" id="username" placeholder="e.g. Alex, Star, or leave blank">
+<small>Your name is optional. You can stay anonymous.</small>
   <input id="age" placeholder="Age">
   <input id="password" type="password" placeholder="Password">
 
@@ -142,19 +144,20 @@ function handleAuth(){
   let age = document.getElementById("age").value;
   let pass = password.value;
 
-  if(!user || !pass || (!isLogin && !age)){
-    alert("Fill all fields");
+  // ✅ name optional now
+  if(!pass || (!isLogin && !age)){
+    alert("Fill required fields");
     return;
   }
 
   if(isLogin){
-    if(user === localStorage.getItem("user") && pass === localStorage.getItem("pass")){
+    if(user === localStorage.getItem("username") && pass === localStorage.getItem("pass")){
       window.location.href = "index.html";
     } else {
       alert("Invalid credentials");
     }
   } else {
-    localStorage.setItem("user", user);
+    localStorage.setItem("username", user || ""); // allow empty
     localStorage.setItem("age", age);
     localStorage.setItem("pass", pass);
 
