@@ -152,7 +152,7 @@ function handleAuth(){
 
   if(isLogin){
     if(user === localStorage.getItem("username") && pass === localStorage.getItem("pass")){
-      window.location.href = "index.html";
+      window.location.href = "dashboard.html";
     } else {
       alert("Invalid credentials");
     }

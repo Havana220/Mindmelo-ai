@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>MindMelo - Insights</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(
+        135deg,
+        #e3f2fd,
+        #f3e5f5,
+        #fce4ec
+      );
+      min-height: 100vh;
+      color: #3d3150;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .topbar {
+      height: 75px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 45px;
+
+      background: rgba(255,255,255,0.65);
+      backdrop-filter: blur(15px);
+
+      border-bottom: 1px solid rgba(255,255,255,0.8);
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: 700;
+      color: #6a4c93;
+      cursor: pointer;
+    }
+
+    .back-btn {
+      border: none;
+      padding: 10px 18px;
+      border-radius: 20px;
+
+      background: #e1bee7;
+      color: #5b3b70;
+
+      font-size: 14px;
+      cursor: pointer;
+
+      transition: 0.25s;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(106,76,147,0.15);
+    }
+
+    /* =========================
+       PAGE
+    ========================= */
+
+    .page {
+      max-width: 1100px;
+      margin: auto;
+      padding: 35px 25px 50px;
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h1 {
+      margin: 0;
+      font-size: 30px;
+      color: #4f3b65;
+    }
+
+    .welcome p {
+      margin-top: 7px;
+      color: #756b80;
+    }
+
+    /* =========================
+       SUMMARY CARDS
+    ========================= */
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 25px;
+    }
+
+    .summary-card {
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(15px);
+
+      border-radius: 20px;
+      padding: 20px;
+
+      box-shadow: 0 8px 25px rgba(80,50,100,0.08);
+
+      transition: 0.25s;
+    }
+
+    .summary-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .summary-icon {
+      font-size: 25px;
+      margin-bottom: 10px;
+    }
+
+    .summary-title {
+      font-size: 13px;
+      color: #81778b;
+    }
+
+    .summary-value {
+      font-size: 25px;
+      font-weight: 700;
+      margin-top: 4px;
+      color: #5d4773;
+    }
+
+    /* =========================
+       CHART GRID
+    ========================= */
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(15px);
+
+      border-radius: 22px;
+      padding: 25px;
+
+      box-shadow: 0 8px 30px rgba(80,50,100,0.08);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 19px;
+      color: #554064;
+    }
+
+    .card-description {
+      font-size: 13px;
+      color: #81778b;
+      margin-bottom: 20px;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 280px;
+    }
+
+    /* =========================
+       INSIGHT CARD
+    ========================= */
+
+    .observation {
+      background: linear-gradient(
+        135deg,
+        rgba(225,190,231,0.65),
+        rgba(187,222,251,0.65)
+      );
+    }
+
+    .observation-content {
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+    }
+
+    .observation-icon {
+      font-size: 32px;
+    }
+
+    #observationText {
+      margin: 0;
+      line-height: 1.6;
+      color: #5d5267;
+      font-size: 14px;
+    }
+
+    /* =========================
+       LOADING
+    ========================= */
+
+    #loading {
+      text-align: center;
+      padding: 30px;
+      color: #766b80;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media(max-width: 850px) {
+
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .chart-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        padding: 0 20px;
+      }
+    }
+
+    @media(max-width: 500px) {
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page {
+        padding: 25px 15px;
+      }
+
+      .welcome h1 {
+        font-size: 25px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       TOP BAR
+  ========================= -->
+
+  <header class="topbar">
+
+    <div class="logo" onclick="goDashboard()">
+      MindMelo 💙
+    </div>
+
+    <button class="back-btn" onclick="goDashboard()">
+      ← Dashboard
+    </button>
+
+  </header>
+
+
+  <!-- =========================
+       PAGE
+  ========================= -->
+
+  <main class="page">
+
+    <div class="welcome">
+
+      <h1>Your Emotional Insights 🌱</h1>
+
+      <p>
+        A gentle look at your emotional patterns over time.
+      </p>
+
+    </div>
+
+
+    <!-- =========================
+         SUMMARY
+    ========================= -->
+
+    <section class="summary-grid">
+
+      <div class="summary-card">
+
+        <div class="summary-icon">
+          💬
+        </div>
+
+        <div class="summary-title">
+          Conversations
+        </div>
+
+        <div class="summary-value" id="conversationCount">
+          0
+        </div>
+
+      </div>
+
+
+      <div class="summary-card">
+
+        <div class="summary-icon">
+          😊
+        </div>
+
+        <div class="summary-title">
+          Happy Moments
+        </div>
+
+        <div class="summary-value" id="happyCount">
+          0
+        </div>
+
+      </div>
+
+
+      <div class="summary-card">
+
+        <div class="summary-icon">
+          💙
+        </div>
+
+        <div class="summary-title">
+          Sad Moments
+        </div>
+
+        <div class="summary-value" id="sadCount">
+          0
+        </div>
+
+      </div>
+
+
+      <div class="summary-card">
+
+        <div class="summary-icon">
+          🌿
+        </div>
+
+        <div class="summary-title">
+          Current Pattern
+        </div>
+
+        <div class="summary-value" id="currentMood">
+          —
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         CHARTS
+    ========================= -->
+
+    <section class="chart-grid">
+
+      <!-- MOOD TREND -->
+
+      <div class="card">
+
+        <h2>📈 Mood Trend</h2>
+
+        <div class="card-description">
+          Your emotional pattern across conversations.
+        </div>
+
+        <div class="chart-container">
+
+          <canvas id="moodTrendChart"></canvas>
+
+        </div>
+
+      </div>
+
+
+      <!-- MOOD DISTRIBUTION -->
+
+      <div class="card">
+
+        <h2>🌸 Mood Distribution</h2>
+
+        <div class="card-description">
+          How your moods have been distributed.
+        </div>
+
+        <div class="chart-container">
+
+          <canvas id="moodDistributionChart"></canvas>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         OBSERVATION
+    ========================= -->
+
+    <section class="card observation">
+
+      <h2>💭 A little observation</h2>
+
+      <div class="observation-content">
+
+        <div class="observation-icon">
+          🌷
+        </div>
+
+        <p id="observationText">
+          Your insights will appear here as you continue talking with MindMelo.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <div id="loading">
+      Loading your insights...
+    </div>
+
+  </main>
+
+
+<script>
+
+  /* =========================
+     LOGIN CHECK
+  ========================= */
+
+  if (!localStorage.getItem("username")) {
+    window.location.href = "login.html";
+  }
+
+
+  /* =========================
+     DASHBOARD
+  ========================= */
+
+  function goDashboard() {
+    window.location.href = "dashboard.html";
+  }
+
+
+  /* =========================
+     CHART VARIABLES
+  ========================= */
+
+  let moodTrendChart;
+  let moodDistributionChart;
+
+
+  /* =========================
+     LOAD INSIGHTS
+  ========================= */
+
+  async function loadInsights() {
+
+  try {
+
+    const username =
+      localStorage.getItem("username") || "Friend";
+
+    const response = await fetch(
+      `http://localhost:5000/insights/${encodeURIComponent(username)}`
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error("Unable to load insights");
+    }
+
+    const moodHistory = data.moodHistory || [];
+
+    updateSummary(moodHistory);
+
+    createMoodTrend(moodHistory);
+
+    createMoodDistribution(moodHistory);
+
+    generateObservation(moodHistory);
+
+    document.getElementById("loading").style.display = "none";
+
+  } catch (error) {
+
+    console.error("Insights error:", error);
+
+    document.getElementById("loading").innerText =
+      "Unable to load insights.";
+
+  }
+
+}
+
+
+  /* =========================
+     SUMMARY
+  ========================= */
+
+  function updateSummary(history) {
+
+    const happy =
+      history.filter(m => m === "happy").length;
+
+    const sad =
+      history.filter(m => m === "sad").length;
+
+    const stressed =
+      history.filter(m => m === "stressed").length;
+
+    const neutral =
+      history.filter(m => m === "neutral").length;
+
+
+    document.getElementById("conversationCount")
+      .innerText = history.length;
+
+
+    document.getElementById("happyCount")
+      .innerText = happy;
+
+
+    document.getElementById("sadCount")
+      .innerText = sad;
+
+
+    if (history.length === 0) {
+
+      document.getElementById("currentMood")
+        .innerText = "—";
+
+      return;
+
+    }
+
+
+    const latest =
+      history[history.length - 1];
+
+
+    const moodNames = {
+
+      happy: "Happy 😊",
+
+      sad: "Sad 💙",
+
+      stressed: "Stressed 😓",
+
+      neutral: "Neutral 🙂"
+
+    };
+
+
+    document.getElementById("currentMood")
+      .innerText =
+      moodNames[latest] || "Neutral 🙂";
+
+  }
+
+
+  /* =========================
+     MOOD TREND
+  ========================= */
+
+  function createMoodTrend(history) {
+
+    const scores = history.map(mood => {
+
+      if (mood === "happy") return 5;
+
+      if (mood === "sad") return 2;
+
+      if (mood === "stressed") return 1;
+
+      return 3;
+
+    });
+
+
+    if (moodTrendChart) {
+      moodTrendChart.destroy();
+    }
+
+
+    moodTrendChart = new Chart(
+      document.getElementById("moodTrendChart"),
+      {
+
+        type: "line",
+
+        data: {
+
+          labels: history.map(
+            (_, index) => `Chat ${index + 1}`
+          ),
+
+          datasets: [{
+
+            label: "Mood",
+
+            data: scores,
+
+            tension: 0.4,
+
+            fill: true
+
+          }]
+
+        },
+
+        options: {
+
+          responsive: true,
+
+          maintainAspectRatio: false,
+
+          scales: {
+
+            y: {
+
+              min: 1,
+
+              max: 5,
+
+              ticks: {
+
+                callback: function(value) {
+
+                  const labels = {
+
+                    1: "Stressed",
+
+                    2: "Sad",
+
+                    3: "Neutral",
+
+                    4: "Good",
+
+                    5: "Happy"
+
+                  };
+
+                  return labels[value] || value;
+
+                }
+
+              }
+
+            }
+
+          }
+
+        }
+
+      }
+    );
+
+  }
+
+
+  /* =========================
+     MOOD DISTRIBUTION
+  ========================= */
+
+  function createMoodDistribution(history) {
+
+    const counts = {
+
+      happy: 0,
+
+      sad: 0,
+
+      stressed: 0,
+
+      neutral: 0
+
+    };
+
+
+    history.forEach(mood => {
+
+      if (counts[mood] !== undefined) {
+
+        counts[mood]++;
+
+      }
+
+    });
+
+
+    if (moodDistributionChart) {
+
+      moodDistributionChart.destroy();
+
+    }
+
+
+    moodDistributionChart = new Chart(
+
+      document.getElementById(
+        "moodDistributionChart"
+      ),
+
+      {
+
+        type: "doughnut",
+
+        data: {
+
+          labels: [
+
+            "Happy",
+
+            "Sad",
+
+            "Stressed",
+
+            "Neutral"
+
+          ],
+
+          datasets: [{
+
+            data: [
+
+              counts.happy,
+
+              counts.sad,
+
+              counts.stressed,
+
+              counts.neutral
+
+            ]
+
+          }]
+
+        },
+
+        options: {
+
+          responsive: true,
+
+          maintainAspectRatio: false,
+
+          plugins: {
+
+            legend: {
+
+              position: "bottom"
+
+            }
+
+          }
+
+        }
+
+      }
+
+    );
+
+  }
+
+
+  /* =========================
+     OBSERVATION
+  ========================= */
+
+  function generateObservation(history) {
+
+    const observation =
+      document.getElementById(
+        "observationText"
+      );
+
+
+    if (history.length === 0) {
+
+      observation.innerText =
+        "Start a conversation with MindMelo and your emotional patterns will gradually appear here. 🌱";
+
+      return;
+
+    }
+
+
+    const counts = {
+
+      happy: 0,
+
+      sad: 0,
+
+      stressed: 0,
+
+      neutral: 0
+
+    };
+
+
+    history.forEach(mood => {
+
+      if (counts[mood] !== undefined) {
+
+        counts[mood]++;
+
+      }
+
+    });
+
+
+    const dominant =
+      Object.keys(counts).reduce(
+        (a, b) =>
+          counts[a] > counts[b] ? a : b
+      );
+
+
+    const messages = {
+
+      happy:
+        "You've had quite a few positive moments recently. Hold onto the things and people that bring you that sense of happiness. 💛",
+
+      sad:
+        "It looks like you've been experiencing some difficult emotions lately. Remember that you don't have to have everything figured out at once. Be gentle with yourself. 💙",
+
+      stressed:
+        "You've had several moments where things seem to feel overwhelming. Remember to give yourself small pauses and moments to breathe. 🌿",
+
+      neutral:
+        "Your emotional pattern has been fairly balanced so far. Keep checking in with yourself and noticing how you're feeling. 🌸"
+
+    };
+
+
+    observation.innerText =
+      messages[dominant];
+
+  }
+
+
+  /* =========================
+     START
+  ========================= */
+
+  loadInsights();
+
+</script>
+
+</body>
+</html>

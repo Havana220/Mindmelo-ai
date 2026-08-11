@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static(__dirname));
 
 /* =========================
    🟢 MONGODB CONNECT
@@ -254,6 +255,84 @@ app.get("/journal/:username", async (req, res) => {
     res.status(500).json([]);
   }
 });
+
+/* =========================
+   📊 INSIGHTS
+========================= */
+
+app.get("/insights/:username", async (req, res) => {
+  try {
+    const username = req.params.username;
+
+    // Find the user's data in MongoDB
+    const user = await User.findOne({ username: username });
+
+    // If user doesn't exist
+    if (!user) {
+      return res.json({
+        success: true,
+        conversationCount: 0,
+        moodHistory: [],
+        counts: {
+          happy: 0,
+          sad: 0,
+          stressed: 0,
+          neutral: 0
+        },
+        latestMood: "neutral"
+      });
+    }
+
+    // Get all moods
+    const moodHistory = user.moods || [];
+
+    // Count each mood
+    const counts = {
+      happy: 0,
+      sad: 0,
+      stressed: 0,
+      neutral: 0
+    };
+
+    moodHistory.forEach(mood => {
+      if (counts[mood] !== undefined) {
+        counts[mood]++;
+      }
+    });
+
+    // Latest mood
+    const latestMood =
+      moodHistory.length > 0
+        ? moodHistory[moodHistory.length - 1]
+        : "neutral";
+
+    res.json({
+      success: true,
+
+      // Number of emotional check-ins
+      conversationCount: moodHistory.length,
+
+      // Full mood history
+      moodHistory: moodHistory,
+
+      // Mood counts
+      counts: counts,
+
+      // Most recent mood
+      latestMood: latestMood
+    });
+
+  } catch (error) {
+
+    console.log("INSIGHTS ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Unable to load insights"
+    });
+  }
+});
+
 
 /* =========================
    🚀 START SERVER

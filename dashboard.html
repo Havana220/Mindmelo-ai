@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>MindMelo — Your Safe Space</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+
+      background:
+        linear-gradient(
+          135deg,
+          #e3f2fd 0%,
+          #f3e5f5 50%,
+          #fce4ec 100%
+        );
+
+      color: #263238;
+    }
+
+
+    /* =========================
+       NAVBAR
+    ========================= */
+
+    .navbar {
+      height: 75px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 6%;
+
+      background: rgba(255,255,255,0.65);
+
+      backdrop-filter: blur(15px);
+
+      border-bottom: 1px solid rgba(255,255,255,0.7);
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+
+      color: #5e35b1;
+    }
+
+    .logo span {
+      color: #2196f3;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .welcome {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .profile-btn {
+      width: 42px;
+      height: 42px;
+
+      border-radius: 50%;
+
+      border: none;
+
+      background:
+        linear-gradient(
+          135deg,
+          #90caf9,
+          #ce93d8
+        );
+
+      cursor: pointer;
+
+      font-size: 18px;
+    }
+
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .main {
+      width: 90%;
+      max-width: 1200px;
+
+      margin: 45px auto;
+    }
+
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+      background: rgba(255,255,255,0.75);
+
+      border-radius: 28px;
+
+      padding: 45px;
+
+      display: flex;
+
+      justify-content: space-between;
+      align-items: center;
+
+      gap: 30px;
+
+      box-shadow:
+        0 15px 45px rgba(100,70,130,0.12);
+
+      backdrop-filter: blur(15px);
+    }
+
+    .hero-text {
+      max-width: 650px;
+    }
+
+    .hero-text h1 {
+      font-size: 42px;
+
+      color: #3f3d70;
+
+      margin-bottom: 12px;
+    }
+
+    .hero-text h1 span {
+      color: #7e57c2;
+    }
+
+    .hero-text p {
+      font-size: 17px;
+
+      color: #666;
+
+      line-height: 1.7;
+
+      margin-bottom: 25px;
+    }
+
+
+    /* =========================
+       TALK BUTTON
+    ========================= */
+
+    .talk-btn {
+      border: none;
+
+      padding: 15px 28px;
+
+      border-radius: 30px;
+
+      font-size: 15px;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+      color: #263238;
+
+      background:
+        linear-gradient(
+          90deg,
+          #81d4fa,
+          #ce93d8
+        );
+
+      transition: 0.25s;
+    }
+
+    .talk-btn:hover {
+      transform: translateY(-3px);
+
+      box-shadow:
+        0 10px 25px rgba(120,80,160,0.2);
+    }
+
+
+    /* =========================
+       HERO DECORATION
+    ========================= */
+
+    .hero-circle {
+      width: 180px;
+      height: 180px;
+
+      border-radius: 50%;
+
+      display: flex;
+
+      justify-content: center;
+      align-items: center;
+
+      font-size: 75px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #b3e5fc,
+          #e1bee7,
+          #f8bbd0
+        );
+
+      box-shadow:
+        0 15px 35px rgba(120,80,160,0.15);
+    }
+
+
+    /* =========================
+       SECTION TITLE
+    ========================= */
+
+    .section-title {
+      margin-top: 40px;
+
+      margin-bottom: 20px;
+    }
+
+    .section-title h2 {
+      font-size: 24px;
+
+      color: #3f3d70;
+    }
+
+    .section-title p {
+      margin-top: 5px;
+
+      color: #777;
+
+      font-size: 14px;
+    }
+
+
+    /* =========================
+       FEATURE GRID
+    ========================= */
+
+    .feature-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      gap: 20px;
+    }
+
+
+    .feature-card {
+
+      background:
+        rgba(255,255,255,0.8);
+
+      border-radius: 22px;
+
+      padding: 25px;
+
+      min-height: 180px;
+
+      cursor: pointer;
+
+      transition: 0.25s;
+
+      box-shadow:
+        0 10px 30px rgba(100,70,130,0.08);
+    }
+
+    .feature-card:hover {
+
+      transform: translateY(-6px);
+
+      box-shadow:
+        0 15px 35px rgba(100,70,130,0.15);
+    }
+
+    .feature-icon {
+
+      width: 55px;
+      height: 55px;
+
+      border-radius: 16px;
+
+      display: flex;
+
+      justify-content: center;
+      align-items: center;
+
+      font-size: 27px;
+
+      margin-bottom: 18px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #b3e5fc,
+          #e1bee7
+        );
+    }
+
+    .feature-card h3 {
+
+      color: #3f3d70;
+
+      margin-bottom: 8px;
+
+      font-size: 18px;
+    }
+
+    .feature-card p {
+
+      color: #777;
+
+      font-size: 13px;
+
+      line-height: 1.5;
+    }
+
+
+    /* =========================
+       BOTTOM SECTION
+    ========================= */
+
+    .bottom-grid {
+
+      margin-top: 25px;
+
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 20px;
+    }
+
+
+    .info-card {
+
+      background:
+        rgba(255,255,255,0.8);
+
+      border-radius: 22px;
+
+      padding: 28px;
+
+      box-shadow:
+        0 10px 30px rgba(100,70,130,0.08);
+    }
+
+    .info-card h3 {
+
+      color: #3f3d70;
+
+      margin-bottom: 12px;
+    }
+
+    .info-card p {
+
+      color: #666;
+
+      line-height: 1.6;
+
+      font-size: 14px;
+    }
+
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media(max-width: 900px) {
+
+      .feature-grid {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .hero-circle {
+        width: 140px;
+        height: 140px;
+        font-size: 55px;
+      }
+    }
+
+
+    @media(max-width: 650px) {
+
+      .navbar {
+        padding: 0 20px;
+      }
+
+      .main {
+        width: 92%;
+        margin: 25px auto;
+      }
+
+      .hero {
+        padding: 30px;
+
+        flex-direction: column;
+
+        text-align: center;
+      }
+
+      .hero-text h1 {
+        font-size: 31px;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .bottom-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .welcome {
+        display: none;
+      }
+    }
+
+  </style>
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     NAVBAR
+========================= -->
+
+<nav class="navbar">
+
+  <div class="logo">
+    MindMelo <span>💙</span>
+  </div>
+
+  <div class="nav-right">
+
+    <div class="welcome">
+      Welcome back, <strong id="username"></strong> 🌸
+    </div>
+
+    <button
+      class="profile-btn"
+      onclick="openProfile()">
+      👤
+    </button>
+
+  </div>
+
+</nav>
+
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="main">
+
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <div class="hero-text">
+
+      <h1>
+        How are you feeling
+        <span>today?</span>
+      </h1>
+
+      <p>
+        Welcome to your personal safe space.
+        Talk freely, reflect on your emotions,
+        and take a moment for yourself.
+      </p>
+
+      <button
+        class="talk-btn"
+        onclick="openChat()">
+
+        💬 Talk to MindMelo
+
+      </button>
+
+    </div>
+
+
+    <div class="hero-circle">
+
+      🌸
+
+    </div>
+
+  </section>
+
+
+
+  <!-- FEATURES -->
+
+  <div class="section-title">
+
+    <h2>Your MindMelo space</h2>
+
+    <p>
+      Take care of your mind, one small step at a time.
+    </p>
+
+  </div>
+
+
+  <section class="feature-grid">
+
+
+    <!-- CHAT -->
+
+    <div
+      class="feature-card"
+      onclick="openChat()">
+
+      <div class="feature-icon">
+        💬
+      </div>
+
+      <h3>
+        Talk to MindMelo
+      </h3>
+
+      <p>
+        Share what's on your mind
+        and have a supportive conversation
+        with your AI companion.
+      </p>
+
+    </div>
+
+
+    <!-- JOURNAL -->
+
+    <div
+      class="feature-card"
+      onclick="openJournal()">
+
+      <div class="feature-icon">
+        📖
+      </div>
+
+      <h3>
+        Your Safe Space
+      </h3>
+
+      <p>
+        Write privately about your thoughts,
+        emotions and experiences.
+      </p>
+
+    </div>
+
+
+    <!-- INSIGHTS -->
+
+    <div
+      class="feature-card"
+      onclick="openInsights()">
+
+      <div class="feature-icon">
+        📊
+      </div>
+
+      <h3>
+        Mood Insights
+      </h3>
+
+      <p>
+        Understand your emotional patterns
+        and see how your mood changes over time.
+      </p>
+
+    </div>
+
+
+    <!-- RESOURCES -->
+
+    <div
+      class="feature-card"
+      onclick="openResources()">
+
+      <div class="feature-icon">
+        🌿
+      </div>
+
+      <h3>
+        Explore
+      </h3>
+
+      <p>
+        Discover calming activities,
+        mindfulness exercises and
+        gentle self-care ideas.
+      </p>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- BOTTOM -->
+
+  <section class="bottom-grid">
+
+
+    <div class="info-card">
+
+      <h3>
+        🌷 Today's reminder
+      </h3>
+
+      <p id="affirmation">
+
+        You don't have to have everything
+        figured out today. Take things
+        one step at a time.
+
+      </p>
+
+    </div>
+
+
+    <div class="info-card">
+
+      <h3>
+        💙 A little about MindMelo
+      </h3>
+
+      <p>
+
+        MindMelo is your private space to
+        talk, reflect and understand yourself
+        better. There is no judgment here.
+
+      </p>
+
+    </div>
+
+  </section>
+
+
+</main>
+
+
+
+<script>
+
+
+/* =========================
+   CHECK LOGIN
+========================= */
+
+if (!localStorage.getItem("username")) {
+
+  window.location.href = "login.html";
+
+}
+
+
+/* =========================
+   USERNAME
+========================= */
+
+const username =
+  localStorage.getItem("username") || "Friend";
+
+document.getElementById("username").innerText =
+  username;
+
+
+/* =========================
+   OPEN CHAT
+========================= */
+
+function openChat() {
+
+  window.location.href = "index.html";
+
+}
+
+
+/* =========================
+   JOURNAL
+========================= */
+
+function openJournal() {
+
+  /*
+     For now the journal exists
+     inside the chat page.
+
+     We will later make Journal
+     its own proper page.
+  */
+
+  window.location.href = "index.html";
+
+}
+
+
+/* =========================
+   INSIGHTS
+========================= */
+
+function openInsights() {
+
+  window.location.href = "index.html";
+
+}
+
+
+/* =========================
+   RESOURCES
+========================= */
+
+function openResources() {
+
+  alert(
+    "🌿 MindMelo Resources\n\n" +
+    "Calming exercises and wellness activities " +
+    "are coming next."
+  );
+
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+function openProfile() {
+
+  alert(
+    "👤 Profile\n\n" +
+    "Username: " + username
+  );
+
+}
+
+
+</script>
+
+</body>
+
+</html>
