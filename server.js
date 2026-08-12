@@ -102,27 +102,86 @@ app.post("/chat", async (req, res) => {
     }
 
     // 🔥 MOOD DETECTION
-    let msg = userMessage.toLowerCase();
-    let mood = "neutral";
+let msg = userMessage.toLowerCase().trim();
 
-    if (
-      msg.includes("stress") ||
-      msg.includes("tired") ||
-      msg.includes("overwhelmed")
-    ) mood = "stressed";
+let mood = "neutral";
 
-    else if (
-      msg.includes("sad") ||
-      msg.includes("lonely") ||
-      msg.includes("depressed")
-    ) mood = "sad";
+// ------------------------------------
+// 😔 SAD / LOW
+// ------------------------------------
+if (
+  msg.includes("don't feel good") ||
+  msg.includes("dont feel good") ||
+  msg.includes("not feeling good") ||
+  msg.includes("not feel good") ||
+  msg.includes("don't feel well") ||
+  msg.includes("dont feel well") ||
+  msg.includes("not feeling well") ||
+  msg.includes("feel bad") ||
+  msg.includes("feeling bad") ||
+  msg.includes("feel terrible") ||
+  msg.includes("feeling terrible") ||
+  msg.includes("feel awful") ||
+  msg.includes("feeling awful") ||
+  msg.includes("feeling low") ||
+  msg.includes("feel low") ||
+  msg.includes("sad") ||
+  msg.includes("lonely") ||
+  msg.includes("depressed") ||
+  msg.includes("unhappy") ||
+  msg.includes("crying") ||
+  msg.includes("want to cry")
+) {
+  mood = "sad";
+}
 
-    else if (
-      msg.includes("happy") ||
-      msg.includes("good") ||
-      msg.includes("great")
-    ) mood = "happy";
+// ------------------------------------
+// 😓 STRESSED
+// ------------------------------------
+else if (
+  msg.includes("stressed") ||
+  msg.includes("stress") ||
+  msg.includes("overwhelmed") ||
+  msg.includes("under pressure") ||
+  msg.includes("too much work") ||
+  msg.includes("can't cope") ||
+  msg.includes("cant cope") ||
+  msg.includes("anxious") ||
+  msg.includes("anxiety") ||
+  msg.includes("worried")
+) {
+  mood = "stressed";
+}
 
+// ------------------------------------
+// 😊 HAPPY
+// ------------------------------------
+else if (
+  msg.includes("i'm happy") ||
+  msg.includes("im happy") ||
+  msg.includes("feeling happy") ||
+  msg.includes("feel happy") ||
+  msg.includes("i'm feeling good") ||
+  msg.includes("im feeling good") ||
+  msg.includes("i feel good") ||
+  msg.includes("feeling great") ||
+  msg.includes("feel great") ||
+  msg.includes("i'm great") ||
+  msg.includes("im great") ||
+  msg.includes("excited") ||
+  msg.includes("amazing") ||
+  msg.includes("wonderful") ||
+  msg.includes("awesome")
+) {
+  mood = "happy";
+}
+
+// ------------------------------------
+// 🙂 OTHERWISE = NEUTRAL
+// ------------------------------------
+else {
+  mood = "neutral";
+}
     // ➕ SAVE USER MESSAGE
     user.messages.push({
       role: "user",

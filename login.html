@@ -4,104 +4,473 @@
   <title>Mindmelo</title>
 
   <style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    min-height: 100vh;
+    font-family: "Segoe UI", Arial, sans-serif;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+      radial-gradient(
+        circle at 10% 20%,
+        rgba(179, 229, 252, 0.55),
+        transparent 30%
+      ),
+      radial-gradient(
+        circle at 90% 80%,
+        rgba(225, 190, 231, 0.55),
+        transparent 32%
+      ),
+      linear-gradient(
+        135deg,
+        #f8fbff,
+        #fbf6fd,
+        #fff8fa
+      );
+
+    color: #4f4765;
+    overflow: hidden;
+    position: relative;
+  }
+
+
+  /* =========================
+     BACKGROUND BLOBS
+  ========================= */
+
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.45;
+    animation: float 10s infinite ease-in-out;
+    pointer-events: none;
+  }
+
+  .blob1 {
+    width: 260px;
+    height: 260px;
+    background: #b3e5fc;
+    top: -70px;
+    left: -60px;
+  }
+
+  .blob2 {
+    width: 300px;
+    height: 300px;
+    background: #e1bee7;
+    bottom: -100px;
+    right: -70px;
+    animation-delay: 2s;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(25px);
+    }
+  }
+
+
+  /* =========================
+     LOGIN CONTAINER
+  ========================= */
+
+  .box {
+    width: min(900px, 92%);
+    min-height: 540px;
+
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(22px);
+
+    border: 1px solid rgba(255, 255, 255, 0.8);
+
+    border-radius: 32px;
+
+    overflow: hidden;
+
+    box-shadow:
+      0 25px 70px rgba(75, 60, 110, 0.15);
+
+    animation: fadeIn 0.65s ease;
+
+    position: relative;
+    z-index: 2;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(25px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+
+  /* =========================
+     LEFT WELCOME PANEL
+  ========================= */
+
+  .welcome-panel {
+    padding: 55px 42px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    background:
+      linear-gradient(
+        145deg,
+        rgba(213, 240, 250, 0.75),
+        rgba(232, 218, 247, 0.75),
+        rgba(249, 222, 234, 0.7)
+      );
+
+    position: relative;
+    overflow: hidden;
+  }
+
+  .welcome-panel::before {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.28);
+
+    top: -70px;
+    right: -60px;
+  }
+
+  .welcome-icon {
+    width: 65px;
+    height: 65px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 21px;
+
+    background: rgba(255, 255, 255, 0.65);
+
+    font-size: 31px;
+
+    margin-bottom: 25px;
+
+    box-shadow:
+      0 10px 25px rgba(90, 75, 130, 0.08);
+  }
+
+  .welcome-panel h1 {
+    font-size: 34px;
+
+    line-height: 1.2;
+
+    color: #332c50;
+
+    margin-bottom: 15px;
+  }
+
+  .welcome-panel h1 span {
+    background:
+      linear-gradient(
+        90deg,
+        #5e91db,
+        #927bd1,
+        #d27da8
+      );
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .welcome-panel p {
+    color: #6f687d;
+
+    font-size: 16px;
+
+    line-height: 1.7;
+
+    max-width: 330px;
+  }
+
+  .quote {
+    margin-top: 35px;
+
+    padding: 18px;
+
+    border-left: 3px solid rgba(126, 112, 190, 0.45);
+
+    color: #625a73;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+    font-style: italic;
+  }
+
+
+  /* =========================
+     LOGIN PANEL
+  ========================= */
+
+  .login-panel {
+    padding: 50px 55px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    background: rgba(255, 255, 255, 0.58);
+  }
+
+  .logo {
+    font-size: 27px;
+
+    font-weight: 800;
+
+    color: #332c50;
+
+    margin-bottom: 5px;
+  }
+
+  .logo span {
+    color: #7771d8;
+  }
+
+  .tagline {
+    color: #82798d;
+
+    font-size: 14px;
+
+    margin-bottom: 28px;
+  }
+
+  #title {
+    color: #39304f;
+
+    font-size: 26px;
+
+    margin-bottom: 20px;
+  }
+
+
+  /* =========================
+     FORM
+  ========================= */
+
+  label {
+    display: block;
+
+    text-align: left;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color: #5e566e;
+
+    margin: 12px 0 7px;
+  }
+
+  input {
+    width: 100%;
+
+    padding: 14px 16px;
+
+    border: 1px solid #e7deee;
+
+    border-radius: 13px;
+
+    background: rgba(250, 247, 252, 0.9);
+
+    color: #4d4560;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition: 0.25s ease;
+  }
+
+  input::placeholder {
+    color: #aaa1b3;
+  }
+
+  input:focus {
+    border-color: #b9a9dc;
+
+    background: white;
+
+    box-shadow:
+      0 0 0 4px rgba(185, 169, 220, 0.12);
+  }
+
+  small {
+    display: block;
+
+    text-align: left;
+
+    color: #968da0;
+
+    font-size: 11px;
+
+    margin-top: 6px;
+
+    line-height: 1.5;
+  }
+
+
+  /* =========================
+     LOGIN BUTTON
+  ========================= */
+
+  .login-panel button {
+    width: 100%;
+
+    border: none;
+
+    padding: 14px;
+
+    margin-top: 22px;
+
+    border-radius: 15px;
+
+    background:
+      linear-gradient(
+        135deg,
+        #9bdcf5,
+        #cdb9ec
+      );
+
+    color: #312b48;
+
+    font-size: 15px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+      0 10px 25px rgba(130, 110, 190, 0.15);
+
+    transition: 0.3s ease;
+  }
+
+  .login-panel button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+      0 14px 30px rgba(130, 110, 190, 0.22);
+  }
+
+
+  /* =========================
+     LOGIN / SIGNUP TOGGLE
+  ========================= */
+
+  .toggle {
+    margin-top: 18px;
+
+    text-align: center;
+
+    color: #70677d;
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+  }
+
+  .toggle:hover {
+    color: #756dcc;
+  }
+
+
+  /* =========================
+     RESPONSIVE
+  ========================= */
+
+  @media (max-width: 750px) {
+
     body {
-      margin: 0;
-      font-family: Arial;
-      background: linear-gradient(135deg, #e3f2fd, #f3e5f5, #fce4ec);
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    .blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(60px);
-      opacity: 0.6;
-      animation: float 10s infinite ease-in-out;
-    }
-
-    .blob1 {
-      width: 200px;
-      height: 200px;
-      background: #b3e5fc;
-      top: 10%;
-      left: 10%;
-    }
-
-    .blob2 {
-      width: 250px;
-      height: 250px;
-      background: #e1bee7;
-      bottom: 10%;
-      right: 10%;
-    }
-
-    @keyframes float {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(30px); }
+      overflow-y: auto;
+      padding: 25px 0;
     }
 
     .box {
-      width: 320px;
-      padding: 25px;
-      background: #ffffffcc;
-      backdrop-filter: blur(15px);
-      border-radius: 20px;
+      width: 92%;
+
+      grid-template-columns: 1fr;
+
+      min-height: auto;
+    }
+
+    .welcome-panel {
+      padding: 35px 30px;
+
       text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      animation: fadeIn 0.6s ease;
+
+      align-items: center;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .welcome-panel p {
+      max-width: 500px;
     }
 
-    .logo {
-      font-size: 32px;
-      font-weight: bold;
-      background: linear-gradient(90deg, #42a5f5, #ab47bc, #ec407a);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 10px;
-    }
+    .quote {
+      text-align: left;
 
-    .tagline {
-      font-size: 13px;
-      color: #666;
-      margin-bottom: 20px;
-    }
-
-    input {
-      width: 90%;
-      margin: 10px 0;
-      padding: 10px;
-      border: none;
-      border-radius: 10px;
-      background: #f3e5f5;
-      outline: none;
-    }
-
-    button {
-      padding: 10px;
-      border: none;
-      border-radius: 10px;
-      background: #b3e5fc;
-      cursor: pointer;
       width: 100%;
-      font-weight: bold;
     }
 
-    .toggle {
-      margin-top: 12px;
-      font-size: 13px;
-      cursor: pointer;
-      color: #555;
+    .login-panel {
+      padding: 35px 30px;
     }
-  </style>
+  }
+
+
+  @media (max-width: 450px) {
+
+    .welcome-panel {
+      padding: 30px 22px;
+    }
+
+    .welcome-panel h1 {
+      font-size: 28px;
+    }
+
+    .login-panel {
+      padding: 30px 22px;
+    }
+  }
+
+</style>
 </head>
 
 <body>
@@ -110,58 +479,155 @@
 <div class="blob blob2"></div>
 
 <div class="box">
-  <div class="logo">Mindmelo 💙</div>
-  <div class="tagline">Your AI mental wellness companion</div>
 
-  <h3 id="title">Login</h3>
+  <!-- =========================
+       WELCOME PANEL
+  ========================= -->
 
-<label>Name / Nickname (optional)</label>
-<input type="text" id="username" placeholder="e.g. Alex, Star, or leave blank">
-<small>Your name is optional. You can stay anonymous.</small>
-  <input id="age" placeholder="Age">
-  <input id="password" type="password" placeholder="Password">
+  <div class="welcome-panel">
 
-  <button onclick="handleAuth()">Login</button>
+    <div class="welcome-icon">
+      🌱
+    </div>
 
-  <div class="toggle" onclick="toggleMode()">
-    Don't have an account? Sign up
+    <h1>
+      Welcome to<br>
+      <span>MindMelo</span>
+    </h1>
+
+    <p>
+      A gentle space to talk, reflect,
+      understand your emotions and
+      take care of yourself.
+    </p>
+
+    <div class="quote">
+      “You don't have to have everything
+      figured out. One small step is enough.”
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       LOGIN PANEL
+  ========================= -->
+
+  <div class="login-panel">
+
+    <div class="logo">
+      MindMelo <span>💙</span>
+    </div>
+
+    <div class="tagline">
+      Your AI mental wellness companion
+    </div>
+
+
+    <h3 id="title">
+      Login
+    </h3>
+
+
+    <label>
+      Name / Nickname
+    </label>
+
+    <input
+      type="text"
+      id="username"
+      placeholder="e.g. Alex, Star, or leave blank"
+    >
+
+    <small>
+      Your name is optional. You can stay anonymous.
+    </small>
+
+
+    <label>
+      Age
+    </label>
+
+    <input
+      id="age"
+      placeholder="Enter your age"
+    >
+
+
+    <label>
+      Password
+    </label>
+
+    <input
+      id="password"
+      type="password"
+      placeholder="Enter your password"
+    >
+
+
+    <button onclick="handleAuth()">
+      Login
+    </button>
+
+
+    <div
+      class="toggle"
+      onclick="toggleMode()"
+    >
+      Don't have an account? Sign up
+    </div>
+
   </div>
 </div>
 
 <script>
 let isLogin = true;
 
-function toggleMode(){
+function toggleMode() {
   isLogin = !isLogin;
-  title.innerText = isLogin ? "Login" : "Sign Up";
-  document.querySelector("button").innerText = isLogin ? "Login" : "Sign Up";
+
+  document.getElementById("title").innerText =
+    isLogin ? "Login" : "Sign Up";
+
+  document.querySelector(".login-panel button").innerText =
+    isLogin ? "Login" : "Sign Up";
+
   document.querySelector(".toggle").innerText =
-    isLogin ? "Don't have an account? Sign up" : "Already have an account? Login";
+    isLogin
+      ? "Don't have an account? Sign up"
+      : "Already have an account? Login";
 }
 
-function handleAuth(){
-  let user = username.value;
-  let age = document.getElementById("age").value;
-  let pass = password.value;
+function handleAuth() {
 
-  // ✅ name optional now
-  if(!pass || (!isLogin && !age)){
+  let user = document.getElementById("username").value;
+  let age = document.getElementById("age").value;
+  let pass = document.getElementById("password").value;
+
+  if (!pass || (!isLogin && !age)) {
     alert("Fill required fields");
     return;
   }
 
-  if(isLogin){
-    if(user === localStorage.getItem("username") && pass === localStorage.getItem("pass")){
+  if (isLogin) {
+
+    if (
+      user === localStorage.getItem("username") &&
+      pass === localStorage.getItem("pass")
+    ) {
       window.location.href = "dashboard.html";
     } else {
       alert("Invalid credentials");
     }
+
   } else {
-    localStorage.setItem("username", user || ""); // allow empty
+
+    localStorage.setItem("username", user || "");
     localStorage.setItem("age", age);
     localStorage.setItem("pass", pass);
 
     alert("Signup successful! Now login.");
+
     toggleMode();
   }
 }

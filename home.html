@@ -154,7 +154,34 @@
       box-shadow: 0 10px 25px rgba(130,110,190,0.18);
 
       transition: 0.3s ease;
+
+        position: relative;
+  overflow: hidden;
     }
+
+    .primary-btn::after {
+  content: "";
+
+  position: absolute;
+
+  width: 0;
+  height: 100%;
+
+  left: 50%;
+  top: 0;
+
+  background: rgba(255,255,255,0.22);
+
+  transform: translateX(-50%);
+
+  transition: width 0.35s ease;
+
+  border-radius: inherit;
+}
+
+.primary-btn:hover::after {
+  width: 100%;
+}
 
 
     .primary-btn:hover {
@@ -833,6 +860,43 @@
 
     }
 
+
+    /* =========================
+   ✨ SUBTLE HERO ANIMATION
+========================= */
+
+.mind-card {
+  animation: floatCard 5s ease-in-out infinite;
+}
+
+.card-small {
+  animation-delay: 1.2s;
+}
+
+@keyframes floatCard {
+  0%, 100% {
+    transform: translateY(0) rotate(-4deg);
+  }
+
+  50% {
+    transform: translateY(-8px) rotate(-4deg);
+  }
+}
+
+.card-small {
+  animation-name: floatSmall;
+}
+
+@keyframes floatSmall {
+  0%, 100% {
+    transform: translateY(0) rotate(5deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(5deg);
+  }
+}
+
   </style>
 
 </head>
@@ -1176,12 +1240,9 @@
 
   <footer>
 
-    <a href="home.html"
-       class="logo">
-
-      MindMelo 💙
-
-    </a>
+    <a href="home.html" class="logo">
+  🌱 MindMelo <span>💙</span>
+</a>
 
 
     <p>
