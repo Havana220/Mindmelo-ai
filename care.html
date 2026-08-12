@@ -1372,8 +1372,21 @@ let calmTime = 120;
 let calmInterval = null;
 let calmRunning = false;
 
+let calmAudio = new Audio();
 
-/* Open calm session */
+const calmSounds = {
+  "🌧️ Rain": "audio/rain.mp3",
+  "🌊 Ocean": "audio/ocean.mp3",
+  "🌲 Forest": "audio/forest.mp3",
+  "🎵 Ambient": "audio/ambient.mp3"
+};
+
+let selectedCalmSound = "🌧️ Rain";
+
+
+/* =========================
+   OPEN CALM SESSION
+========================= */
 
 function openCalmSession() {
 
@@ -1383,7 +1396,9 @@ function openCalmSession() {
 }
 
 
-/* Close calm session */
+/* =========================
+   CLOSE CALM SESSION
+========================= */
 
 function closeCalmSession() {
 
@@ -1393,7 +1408,9 @@ function closeCalmSession() {
 }
 
 
-/* Select sound */
+/* =========================
+   SELECT SOUND
+========================= */
 
 function selectSound(button, sound) {
 
@@ -1403,11 +1420,24 @@ function selectSound(button, sound) {
 
   button.classList.add("active");
 
+  selectedCalmSound = sound;
+
   document.getElementById("selectedSound").innerText = sound;
+
+  // Stop currently playing audio
+  calmAudio.pause();
+  calmAudio.currentTime = 0;
+
+  // Prepare selected sound
+  calmAudio.src = calmSounds[sound];
+  calmAudio.loop = true;
+  calmAudio.volume = 0.45;
 }
 
 
-/* Start timer */
+/* =========================
+   START TIMER + AUDIO
+========================= */
 
 function startCalmTimer() {
 
@@ -1415,9 +1445,21 @@ function startCalmTimer() {
 
   calmRunning = true;
 
-  document.getElementById("calmStartButton").innerText = "⏸ Pause";
+  // Load selected sound
+  calmAudio.src = calmSounds[selectedCalmSound];
+  calmAudio.loop = true;
+  calmAudio.volume = 0.45;
 
-  document.getElementById("calmStartButton").onclick = pauseCalmTimer;
+  // Start audio
+  calmAudio.play().catch(error => {
+    console.log("Audio could not start:", error);
+  });
+
+  document.getElementById("calmStartButton").innerText =
+    "⏸ Pause";
+
+  document.getElementById("calmStartButton").onclick =
+    pauseCalmTimer;
 
   document.getElementById("calmMessage").innerText =
     "Breathe slowly. You don't need to rush anywhere. 🌿";
@@ -1434,6 +1476,10 @@ function startCalmTimer() {
 
       calmRunning = false;
 
+      // Stop audio when session finishes
+      calmAudio.pause();
+      calmAudio.currentTime = 0;
+
       document.getElementById("calmStartButton").innerText =
         "✨ Finished";
 
@@ -1448,13 +1494,18 @@ function startCalmTimer() {
 }
 
 
-/* Pause timer */
+/* =========================
+   PAUSE
+========================= */
 
 function pauseCalmTimer() {
 
   clearInterval(calmInterval);
 
   calmRunning = false;
+
+  // Pause audio
+  calmAudio.pause();
 
   document.getElementById("calmStartButton").innerText =
     "▶ Resume";
@@ -1467,7 +1518,9 @@ function pauseCalmTimer() {
 }
 
 
-/* Reset timer */
+/* =========================
+   RESET
+========================= */
 
 function resetCalmTimer() {
 
@@ -1476,6 +1529,10 @@ function resetCalmTimer() {
   calmTime = 120;
 
   calmRunning = false;
+
+  // Stop audio and return to beginning
+  calmAudio.pause();
+  calmAudio.currentTime = 0;
 
   updateCalmTimer();
 
@@ -1490,7 +1547,9 @@ function resetCalmTimer() {
 }
 
 
-/* Update timer display */
+/* =========================
+   UPDATE TIMER
+========================= */
 
 function updateCalmTimer() {
 
