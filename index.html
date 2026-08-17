@@ -401,6 +401,50 @@ body {
   border-bottom-left-radius: 5px;
 }
 
+/* AI TYPING INDICATOR */
+
+.typing-message {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 55px;
+  padding: 13px 14px;
+}
+
+.typing-message::before {
+  display: none;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #8aa6b5;
+  animation: typingBounce 1.2s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes typingBounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
 
 /* =====================================================
    CHAT INPUT AREA
@@ -1563,7 +1607,11 @@ async function sendMessage() {
 
   // Show typing
   chatbox.innerHTML += `
-    <div class="msg bot" id="typing">Typing...</div>
+    <div class="msg bot typing-message" id="typing">
+    <span class="typing-dot"></span>
+    <span class="typing-dot"></span>
+    <span class="typing-dot"></span>
+  </div>
   `;
 
   chatbox.scrollTop = chatbox.scrollHeight;
@@ -1704,103 +1752,103 @@ function analyze(){
 }
 
 // DASHBOARD
-function toggleDashboard(){
-  let d=document.getElementById("dashboard");
+async function toggleDashboard() {
+  let d = document.getElementById("dashboard");
 
-  if(d.style.display==="block"){
-    d.style.display="none";
-  } else {
-    d.style.display="block";
+  if (d.style.display === "block") {
+    d.style.display = "none";
+    return;
+  }
+
+  // Show dashboard
+  d.style.display = "block";
+
+  // Get username
+  const username =
+    localStorage.getItem("username") || "Friend";
+
+  try {
+
+    const response = await fetch(
+      `http://localhost:5000/checkins/${encodeURIComponent(username)}`
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      console.log("Could not load check-ins");
+      return;
+    }
+
+    // Convert database check-ins into mood history
+    const checkinMoods = data.checkIns.map(
+      checkin => checkin.mood
+    );
+
+    // Save latest check-in history locally
+    localStorage.setItem(
+      "moodHistory",
+      JSON.stringify(checkinMoods)
+    );
+
+    // Draw charts
     renderCharts();
+
+  } catch (error) {
+
+    console.error(
+      "❌ Dashboard Error:",
+      error
+    );
+
   }
 }
 
-function renderCharts() {
+async function renderCharts() {
+  const username = localStorage.getItem("username") || "Friend";
 
-  // Get saved mood history
-  let history =
-    JSON.parse(localStorage.getItem("moodHistory")) || [];
+  try {
+    const response = await fetch(
+      `http://localhost:5000/insights/${encodeURIComponent(username)}`
+    );
 
-  // Make sure history is an array
-  if (!Array.isArray(history)) {
-    history = [];
-  }
+    const data = await response.json();
 
-  // Count each mood
-  let counts = {
-    happy: 0,
-    sad: 0,
-    stressed: 0,
-    neutral: 0
-  };
-
-  history.forEach(mood => {
-
-    // If backend gives an object
-    if (typeof mood === "object" && mood !== null) {
-      mood = mood.mood;
+    if (!data.success) {
+      console.error("Could not load insights");
+      return;
     }
 
-    mood = String(mood).toLowerCase();
+    const counts = data.counts;
 
-    if (mood === "happy") {
-      counts.happy++;
-    }
-    else if (mood === "sad") {
-      counts.sad++;
-    }
-    else if (mood === "stressed") {
-      counts.stressed++;
-    }
-    else {
-      counts.neutral++;
-    }
-  });
+    if (chart1) chart1.destroy();
+    if (chart2) chart2.destroy();
 
-
-  // Destroy old charts
-  if (chart1) {
-    chart1.destroy();
-  }
-
-  if (chart2) {
-    chart2.destroy();
-  }
-
-
-  // ================================
-  // BAR CHART
-  // ================================
-
-  chart1 = new Chart(
-    document.getElementById("barChart"),
-    {
+    // BAR CHART
+    chart1 = new Chart(document.getElementById("barChart"), {
       type: "bar",
 
       data: {
         labels: [
-          "Happy",
-          "Sad",
-          "Stressed",
-          "Neutral"
-        ],
+  "Happy",
+  "Okay",
+  "Sad",
+  "Stressed",
+  "Numb",
+  "Tired"
+],
 
-        datasets: [
-          {
-            label: "Mood Count",
-
-            data: [
-              counts.happy,
-              counts.sad,
-              counts.stressed,
-              counts.neutral
-            ],
-
-            borderWidth: 1,
-
-            borderRadius: 8
-          }
-        ]
+        datasets: [{
+          label: "Mood Count",
+          data: [
+  counts.happy,
+  counts.okay,
+  counts.sad,
+  counts.stressed,
+  counts.numb,
+  counts.tired
+]
+        }]
       },
 
       options: {
@@ -1808,106 +1856,57 @@ function renderCharts() {
 
         plugins: {
           legend: {
-            display: true
-          }
-        },
-
-        scales: {
-          y: {
-            beginAtZero: true,
-
-            ticks: {
-              precision: 0
-            }
+            display: false
           }
         }
       }
-    }
-  );
+    });
 
+    // LINE CHART
+    const moodValues = data.moodHistory.map(mood => {
 
-  // ================================
-  // MOOD SCORE LINE CHART
-  // ================================
+  if (mood === "happy") return 5;
+  if (mood === "okay") return 4;
+  if (mood === "neutral") return 3;
+  if (mood === "sad") return 2;
+  if (mood === "numb") return 2;
+  if (mood === "tired") return 2;
+  if (mood === "stressed") return 1;
 
-  let scores = [];
+  return 3;
+});
 
-  history.forEach(mood => {
-
-    if (typeof mood === "object" && mood !== null) {
-      mood = mood.mood;
-    }
-
-    mood = String(mood).toLowerCase();
-
-    if (mood === "happy") {
-      scores.push(5);
-    }
-    else if (mood === "sad") {
-      scores.push(2);
-    }
-    else if (mood === "stressed") {
-      scores.push(1);
-    }
-    else {
-      scores.push(3);
-    }
-  });
-
-
-  chart2 = new Chart(
-    document.getElementById("lineChart"),
-    {
+    chart2 = new Chart(document.getElementById("lineChart"), {
       type: "line",
 
       data: {
+        labels: moodValues.map((_, index) => index + 1),
 
-        labels: scores.map(
-          (_, index) => `Check-in ${index + 1}`
-        ),
-
-        datasets: [
-          {
-            label: "Mood Score",
-
-            data: scores,
-
-            tension: 0.3,
-
-            fill: false,
-
-            borderWidth: 2,
-
-            pointRadius: 4
-          }
-        ]
+        datasets: [{
+          label: "Mood Over Time",
+          data: moodValues,
+          tension: 0.3
+        }]
       },
 
       options: {
-
         responsive: true,
 
         scales: {
-
           y: {
             min: 1,
             max: 5,
-
             ticks: {
               stepSize: 1
             }
           }
-        },
-
-        plugins: {
-
-          legend: {
-            display: true
-          }
         }
       }
-    }
-  );
+    });
+
+  } catch (error) {
+    console.error("Dashboard error:", error);
+  }
 }
 
 // POPUPS

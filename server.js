@@ -211,7 +211,7 @@ let journalContext = journals
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: "openai/gpt-oss-20b",
         messages: [
           {
             role: "system",
@@ -250,7 +250,16 @@ Be supportive, conversational, and real.`
     });
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "I'm here 💙";
+
+console.log("🤖 GROQ RESPONSE:", data);
+
+if (!response.ok) {
+  throw new Error(data.error?.message || "Groq API error");
+}
+
+const reply =
+  data.choices?.[0]?.message?.content ||
+  "I'm here 💙";
 
     // 💙 AI AFFIRMATION
 const affirmationRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -260,7 +269,7 @@ const affirmationRes = await fetch("https://api.groq.com/openai/v1/chat/completi
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
-    model: "llama-3.1-8b-instant",
+    model: "openai/gpt-oss-20b",
     messages: [
       {
         role: "system",
@@ -313,6 +322,43 @@ if (
     res.json({ reply: "Error 💔", mood: "neutral" });
   }
 
+});
+
+// =====================================
+// 📜 CHAT HISTORY
+// =====================================
+
+app.get("/history/:username", async (req, res) => {
+  try {
+
+    const username = req.params.username;
+
+    const user = await User.findOne({
+      username: username
+    });
+
+    if (!user) {
+      return res.json({
+        success: true,
+        messages: []
+      });
+    }
+
+    res.json({
+      success: true,
+      messages: user.messages || []
+    });
+
+  } catch (error) {
+
+    console.log("❌ History Error:", error);
+
+    res.status(500).json({
+      success: false,
+      messages: []
+    });
+
+  }
 });
 
 // 📝 SAVE JOURNAL
@@ -403,7 +449,7 @@ app.get("/checkins/:username", async (req, res) => {
 
     const checkIns = await CheckIn
       .find({ username: username })
-      .sort({ createdAt: -1 });
+      .sort({ date: -1 });
 
     res.json({
       success: true,
@@ -431,36 +477,25 @@ app.get("/checkins/:username", async (req, res) => {
 
 app.get("/insights/:username", async (req, res) => {
   try {
+
     const username = req.params.username;
 
-    // Find the user's data in MongoDB
-    const user = await User.findOne({ username: username });
+    // Get all daily check-ins
+    const checkIns = await CheckIn
+      .find({ username: username })
+      .sort({ date: 1 });
 
-    // If user doesn't exist
-    if (!user) {
-      return res.json({
-        success: true,
-        conversationCount: 0,
-        moodHistory: [],
-        counts: {
-          happy: 0,
-          sad: 0,
-          stressed: 0,
-          neutral: 0
-        },
-        latestMood: "neutral"
-      });
-    }
-
-    // Get all moods
-    const moodHistory = user.moods || [];
+    // Extract moods from daily check-ins
+    const moodHistory = checkIns.map(checkIn => checkIn.mood);
 
     // Count each mood
     const counts = {
       happy: 0,
+      okay: 0,
       sad: 0,
       stressed: 0,
-      neutral: 0
+      numb: 0,
+      tired: 0
     };
 
     moodHistory.forEach(mood => {
@@ -478,16 +513,12 @@ app.get("/insights/:username", async (req, res) => {
     res.json({
       success: true,
 
-      // Number of emotional check-ins
       conversationCount: moodHistory.length,
 
-      // Full mood history
       moodHistory: moodHistory,
 
-      // Mood counts
       counts: counts,
 
-      // Most recent mood
       latestMood: latestMood
     });
 
@@ -499,9 +530,40 @@ app.get("/insights/:username", async (req, res) => {
       success: false,
       message: "Unable to load insights"
     });
+
   }
 });
 
+// 🔍 CHECK GROQ MODELS
+async function checkGroqModels() {
+  try {
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/models",
+      {
+        headers: {
+          "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
+        }
+      }
+    );
+
+    const data = await response.json();
+
+    console.log("🔍 AVAILABLE GROQ MODELS:");
+
+    if (data.data) {
+      data.data.forEach(model => {
+        console.log(model.id);
+      });
+    } else {
+      console.log(data);
+    }
+
+  } catch (error) {
+    console.log("❌ MODEL CHECK ERROR:", error);
+  }
+}
+
+checkGroqModels();
 
 /* =========================
    🚀 START SERVER
