@@ -475,60 +475,164 @@ app.get("/checkins/:username", async (req, res) => {
    📊 INSIGHTS
 ========================= */
 
+/* =========================
+   📊 INSIGHTS
+========================= */
+
 app.get("/insights/:username", async (req, res) => {
   try {
 
     const username = req.params.username;
 
-    // Get all daily check-ins
+    /* =========================
+       💬 CONVERSATION MOODS
+    ========================= */
+
+    const user = await User.findOne({
+      username: username
+    });
+
+    const conversationMoods =
+      user?.moods || [];
+
+
+    /* =========================
+       🌱 DAILY CHECK-IN MOODS
+    ========================= */
+
     const checkIns = await CheckIn
       .find({ username: username })
       .sort({ date: 1 });
 
-    // Extract moods from daily check-ins
-    const moodHistory = checkIns.map(checkIn => checkIn.mood);
+    const checkinMoods =
+      checkIns.map(checkIn => checkIn.mood);
 
-    // Count each mood
-    const counts = {
+
+    /* =========================
+       📈 CONVERSATION COUNTS
+    ========================= */
+
+    const conversationCounts = {
       happy: 0,
+      sad: 0,
+      stressed: 0,
+      neutral: 0
+    };
+
+    conversationMoods.forEach(mood => {
+
+      if (
+        conversationCounts[mood] !== undefined
+      ) {
+        conversationCounts[mood]++;
+      }
+
+    });
+
+
+    /* =========================
+       🌱 CHECK-IN COUNTS
+    ========================= */
+
+    const checkinCounts = {
+      happy: 0,
+      great: 0,
       okay: 0,
+      neutral: 0,
+      low: 0,
       sad: 0,
       stressed: 0,
       numb: 0,
       tired: 0
     };
 
-    moodHistory.forEach(mood => {
-      if (counts[mood] !== undefined) {
-        counts[mood]++;
+    checkinMoods.forEach(mood => {
+
+      if (
+        checkinCounts[mood] !== undefined
+      ) {
+        checkinCounts[mood]++;
       }
+
     });
 
-    // Latest mood
-    const latestMood =
-      moodHistory.length > 0
-        ? moodHistory[moodHistory.length - 1]
-        : "neutral";
+
+    /* =========================
+       🧠 LATEST CONVERSATION MOOD
+    ========================= */
+
+    const latestConversationMood =
+      conversationMoods.length > 0
+        ? conversationMoods[
+            conversationMoods.length - 1
+          ]
+        : null;
+
+
+    /* =========================
+       🌱 LATEST CHECK-IN MOOD
+    ========================= */
+
+    const latestCheckinMood =
+      checkinMoods.length > 0
+        ? checkinMoods[
+            checkinMoods.length - 1
+          ]
+        : null;
+
+
+    /* =========================
+       📤 SEND INSIGHTS
+    ========================= */
 
     res.json({
+
       success: true,
 
-      conversationCount: moodHistory.length,
+      // 💬 Conversation data
+      conversationCount:
+        conversationMoods.length,
 
-      moodHistory: moodHistory,
+      conversationMoods:
+        conversationMoods,
 
-      counts: counts,
+      conversationCounts:
+        conversationCounts,
 
-      latestMood: latestMood
+      latestConversationMood:
+        latestConversationMood,
+
+
+      // 🌱 Daily check-in data
+      checkinCount:
+        checkinMoods.length,
+
+      checkinMoods:
+        checkinMoods,
+
+      checkinCounts:
+        checkinCounts,
+
+      latestCheckinMood:
+        latestCheckinMood
+
     });
+
 
   } catch (error) {
 
-    console.log("INSIGHTS ERROR:", error);
+    console.log(
+      "❌ INSIGHTS ERROR:",
+      error
+    );
 
     res.status(500).json({
+
       success: false,
-      message: "Unable to load insights"
+
+      message:
+        "Unable to load insights"
+
     });
 
   }

@@ -68,6 +68,29 @@
       gap: 20px;
     }
 
+    .home-btn {
+  text-decoration: none;
+  color: #555;
+  font-size: 14px;
+  font-weight: bold;
+
+  padding: 10px 16px;
+
+  border-radius: 20px;
+
+  background: rgba(255,255,255,0.65);
+
+  transition: 0.25s;
+}
+
+.home-btn:hover {
+  color: #5e35b1;
+
+  background: rgba(255,255,255,0.9);
+
+  transform: translateY(-2px);
+}
+
     .welcome {
       font-size: 14px;
       color: #555;
@@ -455,6 +478,10 @@
 
   <div class="nav-right">
 
+    <a href="home.html" class="home-btn">
+      🏠 Home
+    </a>
+
     <div class="welcome">
       Welcome back, <strong id="username"></strong> 🌸
     </div>
@@ -465,7 +492,7 @@
       👤
     </button>
 
-  </div>
+</div>
 
 </nav>
 
@@ -530,30 +557,6 @@
 
 
   <section class="feature-grid">
-
-
-    <!-- CHAT -->
-
-    <div
-      class="feature-card"
-      onclick="openChat()">
-
-      <div class="feature-icon">
-        💬
-      </div>
-
-      <h3>
-        Talk to MindMelo
-      </h3>
-
-      <p>
-        Share what's on your mind
-        and have a supportive conversation
-        with your AI companion.
-      </p>
-
-    </div>
-
 
     <!-- JOURNAL -->
 

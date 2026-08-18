@@ -1639,7 +1639,8 @@ document.getElementById("volumeSlider").value =
 document.getElementById("volumeValue").innerText =
   "45%";
 
-calmAudio.volume = 0.45;
+calmAudio.volume =
+  document.getElementById("volumeSlider").value;
 
       document.getElementById("calmStartButton").innerText =
         "✨ Finished";
