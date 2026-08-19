@@ -542,12 +542,54 @@
 
 }
 
+/* =========================
+   LOGOUT BUTTON
+========================= */
+
+.dashboard-logout {
+  border: none;
+
+  padding: 11px 20px;
+
+  border-radius: 25px;
+
+  background: linear-gradient(
+    135deg,
+    #b3e5fc,
+    #e1bee7
+  );
+
+  color: #403653;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.25s ease;
+
+  white-space: nowrap;
+}
+
+.dashboard-logout:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(100,80,140,0.18);
+}
+
   </style>
 </head>
 
 
 <body>
 
+  <button
+  class="dashboard-logout"
+  onclick="logout()"
+>
+  🚪 Logout
+</button>
 
 <!-- =========================
      NAVBAR
@@ -574,6 +616,13 @@
       onclick="openProfile()">
       👤
     </button>
+
+    <button
+    class="dashboard-logout"
+    onclick="logout()"
+  >
+    🚪 Logout
+  </button>
 
 </div>
 
@@ -757,6 +806,13 @@
 
 <script>
 
+function logout() {
+  localStorage.removeItem("username");
+  localStorage.removeItem("age");
+  localStorage.removeItem("pass");
+
+  window.location.href = "login.html";
+}
 
 /* =========================
    CHECK LOGIN

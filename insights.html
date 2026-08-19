@@ -51,6 +51,11 @@
     }
 
     .back-btn {
+  position: fixed;
+
+  top: 20px;
+  right: 150px;
+
   border: none;
   padding: 10px 20px;
   border-radius: 25px;
@@ -71,6 +76,8 @@
   transition: all 0.25s ease;
 
   box-shadow: none;
+
+  z-index: 30;
 }
 
 .back-btn:hover {
@@ -394,6 +401,51 @@
   font-size: 11px;
 }
 
+.return-chat,
+.logout-btn {
+  position: fixed;
+
+  top: 20px;
+
+  padding: 11px 18px;
+
+  border: none;
+  border-radius: 25px;
+
+  background: linear-gradient(
+    135deg,
+    #b3e5fc,
+    #e1bee7
+  );
+
+  color: #403653;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  z-index: 30;
+
+  transition: 0.25s ease;
+}
+
+.return-chat {
+  right: 310px;
+}
+
+.logout-btn {
+  right: 25px;
+}
+
+.return-chat:hover,
+.logout-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(100,80,140,0.18);
+}
+
   </style>
 </head>
 
@@ -412,6 +464,14 @@
     <button class="back-btn" onclick="goDashboard()">
       ← Dashboard
     </button>
+
+    <button class="return-chat" onclick="goToChat()">
+  💬 MindMelo
+</button>
+
+<button class="logout-btn" onclick="logout()">
+  🚪 Logout
+</button>
 
   </header>
 
@@ -646,6 +706,14 @@
     window.location.href = "dashboard.html";
   }
 
+  function goToChat() {
+  window.location.href = "index.html";
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "login.html";
+}
 
   /* =========================
      CHART VARIABLES
