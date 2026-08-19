@@ -386,7 +386,6 @@ body {
 
 
 .bot {
-
   background:
     linear-gradient(
       135deg,
@@ -399,7 +398,10 @@ body {
   color: #4d5964;
 
   border-bottom-left-radius: 5px;
+
+  max-width: 90%;
 }
+
 
 /* AI TYPING INDICATOR */
 
@@ -625,7 +627,6 @@ button.send:hover {
 ===================================================== */
 
 #dashboard {
-
   position: fixed;
 
   top: 50%;
@@ -633,45 +634,58 @@ button.send:hover {
 
   transform: translate(-50%, -50%);
 
-  width: 470px;
+  width: 680px;
+  max-width: 88vw;
 
-  max-height: 85vh;
+  max-height: 82vh;
 
   overflow-y: auto;
 
-  background:
-    rgba(255,255,255,0.92);
+  padding: 25px 28px;
+
+  background: rgba(255,255,255,0.96);
 
   backdrop-filter: blur(25px);
 
-  border-radius: 26px;
+  border-radius: 30px;
 
-  padding: 25px;
+  border: 1px solid rgba(255,255,255,0.9);
+
+  box-shadow:
+    0 25px 80px rgba(70,50,100,0.25);
 
   display: none;
 
-  box-shadow:
-    0 25px 70px rgba(60,45,85,0.22);
-
-  z-index: 50;
+  z-index: 100;
 }
 
-
 #dashboard h2 {
-
   text-align: center;
 
   color: #403653;
 
-  margin-bottom: 15px;
+  font-size: 27px;
+
+  margin-bottom: 25px;
 }
 
+#dashboard canvas {
+  height: 220px !important;
+  margin: 0 0 22px 0 !important;
+}
 
-canvas {
+@media (max-width: 800px) {
 
-  margin-top: 15px;
+  #dashboard {
+    width: 92vw;
+    max-width: 92vw;
+    padding: 20px;
+  }
 
-  max-width: 100%;
+  #dashboard canvas {
+    height: 210px !important;
+  }
+
 }
 
 
@@ -1458,6 +1472,35 @@ canvas {
   box-shadow:
     0 8px 20px rgba(100,80,140,0.18);
 }
+
+.ai-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 12px;
+  background: rgba(255,255,255,0.45);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ai-table th,
+.ai-table td {
+  padding: 8px 9px;
+  border: 1px solid rgba(150,130,170,0.15);
+  text-align: left;
+  vertical-align: top;
+}
+
+.ai-table th {
+  font-weight: 700;
+  background: rgba(225,210,235,0.45);
+  color: #51475d;
+}
+
+.ai-table td {
+  color: #5d5565;
+}
+
   </style>
 </head>
 
@@ -1678,9 +1721,9 @@ async function sendMessage() {
     document.getElementById("typing")?.remove();
 
     // Show bot reply
-    chatbox.innerHTML += `
-      <div class="msg bot">${data.reply}</div>
-    `;
+chatbox.innerHTML += `
+  <div class="msg bot">${formatAIResponse(data.reply)}</div>
+`;
 
     chatbox.scrollTop = chatbox.scrollHeight;
 
@@ -1791,61 +1834,41 @@ function analyze(){
 
 // DASHBOARD
 async function toggleDashboard() {
-  let d = document.getElementById("dashboard");
 
-  if (d.style.display === "block") {
-    d.style.display = "none";
+  const dashboard =
+    document.getElementById("dashboard");
+
+  // Close dashboard
+  if (dashboard.style.display === "block") {
+
+    dashboard.style.display = "none";
+
     return;
   }
 
-  // Show dashboard
-  d.style.display = "block";
 
-  // Get username
+  // Open dashboard
+  dashboard.style.display = "block";
+
+
+  // Wait until browser renders the dashboard
+  await new Promise(resolve =>
+    requestAnimationFrame(resolve)
+  );
+
+
+  // Load charts
+  await renderCharts();
+
+}
+
+async function renderCharts() {
+
   const username =
     localStorage.getItem("username") || "Friend";
 
   try {
 
-    const response = await fetch(
-      `http://localhost:5000/checkins/${encodeURIComponent(username)}`
-    );
-
-    const data = await response.json();
-
-    if (!data.success) {
-      console.log("Could not load check-ins");
-      return;
-    }
-
-    // Convert database check-ins into mood history
-    const checkinMoods = data.checkIns.map(
-      checkin => checkin.mood
-    );
-
-    // Save latest check-in history locally
-    localStorage.setItem(
-      "moodHistory",
-      JSON.stringify(checkinMoods)
-    );
-
-    // Draw charts
-    renderCharts();
-
-  } catch (error) {
-
-    console.error(
-      "❌ Dashboard Error:",
-      error
-    );
-
-  }
-}
-
-async function renderCharts() {
-  const username = localStorage.getItem("username") || "Friend";
-
-  try {
     const response = await fetch(
       `http://localhost:5000/insights/${encodeURIComponent(username)}`
     );
@@ -1857,94 +1880,385 @@ async function renderCharts() {
       return;
     }
 
-    const counts = data.counts;
 
-    if (chart1) chart1.destroy();
-    if (chart2) chart2.destroy();
+    /* =====================================================
+       DESTROY OLD CHARTS
+    ===================================================== */
 
-    // BAR CHART
-    chart1 = new Chart(document.getElementById("barChart"), {
+    if (chart1) {
+      chart1.destroy();
+    }
+
+    if (chart2) {
+      chart2.destroy();
+    }
+
+
+    /* =====================================================
+       MOOD COUNTS
+    ===================================================== */
+
+    const counts = data.checkinCounts;
+
+
+    /* =====================================================
+       📊 BAR CHART
+    ===================================================== */
+
+    const barCanvas =
+      document.getElementById("barChart");
+
+    chart1 = new Chart(barCanvas, {
+
       type: "bar",
 
       data: {
+
         labels: [
-  "Happy",
-  "Okay",
-  "Sad",
-  "Stressed",
-  "Numb",
-  "Tired"
-],
+          "Happy",
+          "Okay",
+          "Sad",
+          "Stressed",
+          "Numb",
+          "Tired"
+        ],
 
         datasets: [{
-          label: "Mood Count",
+
+          label: "Check-ins",
+
           data: [
-  counts.happy,
-  counts.okay,
-  counts.sad,
-  counts.stressed,
-  counts.numb,
-  counts.tired
-]
+            counts.happy || 0,
+            counts.okay || 0,
+            counts.sad || 0,
+            counts.stressed || 0,
+            counts.numb || 0,
+            counts.tired || 0
+          ],
+
+          borderWidth: 1,
+
+          borderRadius: 10,
+
+          barPercentage: 0.65,
+
+          categoryPercentage: 0.7
+
         }]
+
       },
 
+
       options: {
+
         responsive: true,
 
+        maintainAspectRatio: false,
+
+
         plugins: {
+
           legend: {
             display: false
+          },
+
+          tooltip: {
+
+            callbacks: {
+
+              label: function(context) {
+
+                return " Check-ins: " +
+                  context.parsed.y;
+
+              }
+
+            }
+
           }
+
+        },
+
+
+        scales: {
+
+          x: {
+
+            grid: {
+              display: false
+            },
+
+            ticks: {
+
+              color: "#756a82",
+
+              font: {
+                size: 11
+              }
+
+            }
+
+          },
+
+
+          y: {
+
+            beginAtZero: true,
+
+            suggestedMax: Math.max(
+              3,
+              Math.max(
+                counts.happy || 0,
+                counts.okay || 0,
+                counts.sad || 0,
+                counts.stressed || 0,
+                counts.numb || 0,
+                counts.tired || 0
+              ) + 1
+            ),
+
+            ticks: {
+
+              stepSize: 1,
+
+              color: "#756a82",
+
+              precision: 0
+
+            },
+
+            grid: {
+
+              color: "rgba(120,100,140,0.10)"
+
+            }
+
+          }
+
         }
+
       }
+
     });
 
-    // LINE CHART
-    const moodValues = data.moodHistory.map(mood => {
 
-  if (mood === "happy") return 5;
-  if (mood === "okay") return 4;
-  if (mood === "neutral") return 3;
-  if (mood === "sad") return 2;
-  if (mood === "numb") return 2;
-  if (mood === "tired") return 2;
-  if (mood === "stressed") return 1;
+    /* =====================================================
+       📈 MOOD TREND
+    ===================================================== */
 
-  return 3;
-});
+    const moods =
+      data.checkinMoods || [];
 
-    chart2 = new Chart(document.getElementById("lineChart"), {
+
+    const moodValues = moods.map(mood => {
+
+      if (mood === "happy") return 5;
+
+      if (mood === "okay") return 4;
+
+      if (mood === "neutral") return 3;
+
+      if (mood === "sad") return 2;
+
+      if (mood === "numb") return 2;
+
+      if (mood === "tired") return 2;
+
+      if (mood === "stressed") return 1;
+
+      return 3;
+
+    });
+
+
+    const moodLabels = moods.map(
+      (_, index) => `Check-in ${index + 1}`
+    );
+
+
+    /* =====================================================
+       📈 LINE CHART
+    ===================================================== */
+
+    const lineCanvas =
+      document.getElementById("lineChart");
+
+
+    chart2 = new Chart(lineCanvas, {
+
       type: "line",
 
       data: {
-        labels: moodValues.map((_, index) => index + 1),
+
+        labels: moodLabels,
 
         datasets: [{
-          label: "Mood Over Time",
+
+          label: "Mood Trend",
+
           data: moodValues,
-          tension: 0.3
+
+          tension: 0.35,
+
+          borderWidth: 3,
+
+          pointRadius: 6,
+
+          pointHoverRadius: 8,
+
+          fill: false
+
         }]
+
       },
 
+
       options: {
+
         responsive: true,
 
-        scales: {
-          y: {
-            min: 1,
-            max: 5,
-            ticks: {
-              stepSize: 1
+        maintainAspectRatio: false,
+
+
+        plugins: {
+
+          legend: {
+
+            display: true,
+
+            position: "top",
+
+            labels: {
+
+              color: "#665a72",
+
+              font: {
+                size: 11
+              }
+
             }
+
+          },
+
+
+          tooltip: {
+
+            callbacks: {
+
+              label: function(context) {
+
+                const value =
+                  context.parsed.y;
+
+                const moodNames = {
+
+                  5: "Happy 😊",
+
+                  4: "Okay 🙂",
+
+                  3: "Neutral 😐",
+
+                  2: "Low 😔",
+
+                  1: "Stressed 😓"
+
+                };
+
+                return moodNames[value] ||
+                  "Mood";
+
+              }
+
+            }
+
           }
+
+        },
+
+
+        scales: {
+
+          x: {
+
+            grid: {
+
+              color:
+                "rgba(120,100,140,0.08)"
+
+            },
+
+            ticks: {
+
+              color: "#756a82",
+
+              font: {
+                size: 10
+              }
+
+            }
+
+          },
+
+
+          y: {
+
+            min: 1,
+
+            max: 5,
+
+            ticks: {
+
+              stepSize: 1,
+
+              color: "#756a82",
+
+              callback: function(value) {
+
+                const labels = {
+
+                  1: "Stressed",
+
+                  2: "Low",
+
+                  3: "Neutral",
+
+                  4: "Okay",
+
+                  5: "Happy"
+
+                };
+
+                return labels[value] || "";
+
+              }
+
+            },
+
+            grid: {
+
+              color:
+                "rgba(120,100,140,0.10)"
+
+            }
+
+          }
+
         }
+
       }
+
     });
 
+
   } catch (error) {
-    console.error("Dashboard error:", error);
+
+    console.error(
+      "❌ Dashboard chart error:",
+      error
+    );
+
   }
+
 }
 
 // POPUPS
@@ -1961,9 +2275,13 @@ function togglePopup(id){
   p.style.display="block";
   currentPopup=id;
 
-   if(id==="journalPopup"){
-    loadJournal();
-  }
+   if (id === "journalPopup") {
+  loadJournal();
+}
+
+if (id === "historyPopup") {
+  loadHistory();
+}
 }
 
 // PROFILE
@@ -1988,48 +2306,97 @@ function logout(){
 }
 
 //jounal lock
-function openJournalLock(){
-  // 👉 If already open → CLOSE EVERYTHING
-  if(currentPopup === "lockPopup" || currentPopup === "journalPopup"){
-    document.querySelectorAll(".popup").forEach(p => p.style.display = "none");
+function openJournalLock() {
+
+  if (
+    currentPopup === "lockPopup" ||
+    currentPopup === "journalPopup"
+  ) {
+    document.querySelectorAll(".popup").forEach(p => {
+      p.style.display = "none";
+    });
+
     currentPopup = null;
     return;
   }
 
-  let savedPin = localStorage.getItem("journalPin");
+  const username =
+    localStorage.getItem("username") || "Friend";
 
-  document.querySelectorAll(".popup").forEach(p => p.style.display = "none");
+  // USER-SPECIFIC PIN
+  const pinKey = "journalPin_" + username;
+
+  const savedPin =
+    localStorage.getItem(pinKey);
+
+  document.querySelectorAll(".popup").forEach(p => {
+    p.style.display = "none";
+  });
 
   document.getElementById("lockPopup").style.display = "block";
+
   currentPopup = "lockPopup";
 
-  if(!savedPin){
-    document.getElementById("lockText").innerText = "Set a PIN for your journal";
+  document.getElementById("journalPin").value = "";
+
+  if (!savedPin) {
+
+    document.getElementById("lockText").innerText =
+      "Set a PIN for your journal 🔒";
+
   } else {
-    document.getElementById("lockText").innerText = "Enter your PIN";
+
+    document.getElementById("lockText").innerText =
+      "Enter your PIN 🔐";
+
   }
 }
 
-function handlePin(){
-  let inputPin = document.getElementById("journalPin").value;
-  let savedPin = localStorage.getItem("journalPin");
 
-  if(!inputPin) return;
+function handlePin() {
 
-  // First time → set PIN
-  if(!savedPin){
-    localStorage.setItem("journalPin", inputPin);
-    alert("PIN set successfully 🔒");
+  const inputPin =
+    document.getElementById("journalPin").value.trim();
 
-    openJournal();
+  const username =
+    localStorage.getItem("username") || "Friend";
+
+  // USER-SPECIFIC PIN KEY
+  const pinKey =
+    "journalPin_" + username;
+
+  const savedPin =
+    localStorage.getItem(pinKey);
+
+  if (!inputPin) {
+    alert("Please enter a PIN 🔐");
     return;
   }
 
-  // Check PIN
-  if(inputPin === savedPin){
+  // FIRST TIME FOR THIS USER
+  if (!savedPin) {
+
+    localStorage.setItem(
+      pinKey,
+      inputPin
+    );
+
+    alert("PIN set successfully 🔒");
+
     openJournal();
+
+    return;
+  }
+
+  // EXISTING USER → CHECK PIN
+  if (inputPin === savedPin) {
+
+    openJournal();
+
   } else {
+
     alert("Wrong PIN ❌");
+
   }
 }
 
@@ -2257,12 +2624,228 @@ async function saveCheckIn() {
 
 }
 
+async function loadHistory() {
+
+  const username =
+    localStorage.getItem("username");
+
+  if (!username) return;
+
+
+  try {
+
+    const response = await fetch(
+      `http://localhost:5000/history/${encodeURIComponent(username)}`
+    );
+
+    if (!response.ok) {
+
+      throw new Error(
+        `Server error: ${response.status}`
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    console.log(
+      "📜 HISTORY DATA:",
+      data
+    );
+
+
+    const historyElement =
+      document.getElementById("history");
+
+
+    if (!data.success ||
+        !data.messages ||
+        data.messages.length === 0) {
+
+      historyElement.innerHTML =
+        "<p>No conversations yet 💙</p>";
+
+      return;
+
+    }
+
+
+    let html = "";
+
+
+    data.messages.forEach(message => {
+
+      const role =
+        message.role === "user"
+          ? "You"
+          : "Mindmelo";
+
+
+      const className =
+        message.role === "user"
+          ? "user-history"
+          : "bot-history";
+
+
+      html += `
+
+        <div
+          class="history-message ${className}"
+          style="
+            margin-bottom:10px;
+            padding:10px 12px;
+            border-radius:12px;
+            background:#f7f2fa;
+          "
+        >
+
+          <strong>${role}</strong>
+
+          <div style="
+            margin-top:5px;
+            line-height:1.5;
+          ">
+            ${message.content}
+          </div>
+
+        </div>
+
+      `;
+
+    });
+
+
+    historyElement.innerHTML =
+      html;
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "❌ LOAD HISTORY ERROR:",
+      error
+    );
+
+    document.getElementById(
+      "history"
+    ).innerHTML =
+      "<p>Unable to load history 💙</p>";
+
+  }
+
+}
 
 // Set date when page loads
 setCheckinDate();
 
 function goToDashboard() {
   window.location.href = "dashboard.html";
+}
+
+function formatAIResponse(text) {
+
+  if (!text) return "";
+
+  // Escape HTML first for safety
+  text = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  // Convert bold
+  text = text.replace(
+    /\*\*(.*?)\*\*/g,
+    "<strong>$1</strong>"
+  );
+
+  // Convert bullet points
+  text = text.replace(
+    /^\s*[-*]\s+(.*)$/gm,
+    "<li>$1</li>"
+  );
+
+  // Wrap consecutive list items
+  text = text.replace(
+    /(<li>.*?<\/li>)(\s*<li>.*?<\/li>)*/gs,
+    "<ul>$&</ul>"
+  );
+
+  // Convert numbered lists
+  text = text.replace(
+    /^\s*\d+\.\s+(.*)$/gm,
+    "<li>$1</li>"
+  );
+
+  // Convert Markdown tables
+  const lines = text.split("\n");
+
+  let output = [];
+  let inTable = false;
+
+  for (let i = 0; i < lines.length; i++) {
+
+    const line = lines[i].trim();
+
+    // Detect table row
+    if (
+      line.startsWith("|") &&
+      line.endsWith("|")
+    ) {
+
+      // Ignore separator row
+      if (/^\|[\s\-:|]+\|$/.test(line)) {
+        continue;
+      }
+
+      const cells = line
+        .split("|")
+        .slice(1, -1)
+        .map(cell => cell.trim());
+
+      if (!inTable) {
+
+        output.push(
+          '<table class="ai-table"><tbody>'
+        );
+
+        output.push(
+          "<tr>" +
+          cells.map(cell => `<th>${cell}</th>`).join("") +
+          "</tr>"
+        );
+
+        inTable = true;
+
+      } else {
+
+        output.push(
+          "<tr>" +
+          cells.map(cell => `<td>${cell}</td>`).join("") +
+          "</tr>"
+        );
+      }
+
+    } else {
+
+      if (inTable) {
+        output.push("</tbody></table>");
+        inTable = false;
+      }
+
+      output.push(line);
+    }
+  }
+
+  if (inTable) {
+    output.push("</tbody></table>");
+  }
+
+  // Convert remaining line breaks
+  return output.join(" ");
 }
 
 </script>

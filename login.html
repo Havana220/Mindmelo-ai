@@ -470,6 +470,10 @@
     }
   }
 
+  #ageField {
+  display: none;
+}
+
 </style>
 </head>
 
@@ -544,14 +548,19 @@
     </small>
 
 
-    <label>
-      Age
-    </label>
+    <div id="ageField">
+  <label>
+    Age
+  </label>
 
-    <input
-      id="age"
-      placeholder="Enter your age"
-    >
+  <input
+    id="age"
+    type="number"
+    placeholder="Enter your age"
+    min="1"
+    max="120"
+  >
+</div>
 
 
     <label>
@@ -596,6 +605,10 @@ function toggleMode() {
     isLogin
       ? "Don't have an account? Sign up"
       : "Already have an account? Login";
+
+  // Show age only during signup
+  document.getElementById("ageField").style.display =
+    isLogin ? "none" : "block";
 }
 
 function handleAuth() {

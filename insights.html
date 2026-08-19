@@ -51,23 +51,34 @@
     }
 
     .back-btn {
-      border: none;
-      padding: 10px 18px;
-      border-radius: 20px;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
 
-      background: #e1bee7;
-      color: #5b3b70;
+  background: linear-gradient(
+    135deg,
+    #aee4f7,
+    #d9b5e8
+  );
 
-      font-size: 14px;
-      cursor: pointer;
+  color: #4b3b61;
 
-      transition: 0.25s;
-    }
+  font-size: 16px;
+  font-weight: 700;
 
-    .back-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(106,76,147,0.15);
-    }
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+
+  box-shadow: none;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 6px 16px rgba(120, 100, 150, 0.15);
+}
 
     /* =========================
        PAGE
@@ -382,6 +393,7 @@
   color: #9b91a4;
   font-size: 11px;
 }
+
   </style>
 </head>
 
@@ -557,7 +569,7 @@
 
         <div class="chart-container">
 
-          <canvas id="moodTrendChart"></canvas>
+          <canvas id="moodTrend"></canvas>
 
         </div>
 
@@ -576,7 +588,7 @@
 
         <div class="chart-container">
 
-          <canvas id="moodDistributionChart"></canvas>
+          <canvas id="moodDistribution"></canvas>
 
         </div>
 
@@ -664,17 +676,16 @@
       throw new Error("Unable to load insights");
     }
 
-    const moodHistory = data.moodHistory || [];
+    const conversationMoods = data.conversationMoods || [];
+const checkinMoods = data.checkinMoods || [];
 
-console.log("📊 MOOD HISTORY:", moodHistory);
+console.log("💬 CONVERSATION MOODS:", conversationMoods);
+console.log("🌱 CHECK-IN MOODS:", checkinMoods);
 
-updateSummary(moodHistory);
-
-createMoodTrend(moodHistory);
-
-createMoodDistribution(moodHistory);
-
-generateObservation(moodHistory);
+updateSummary(checkinMoods);
+createMoodTrend(checkinMoods);
+createMoodDistribution(checkinMoods);
+generateObservation(checkinMoods);
 
     document.getElementById("loading").style.display = "none";
 
@@ -755,76 +766,90 @@ generateObservation(moodHistory);
      MOOD TREND
   ========================= */
 
-  function createMoodTrend(history) {
+  function createMoodTrend(moods) {
 
-  const moodScores = {
-    stressed: 1,
-    sad: 2,
-    low: 2,
-    tired: 2,
-    numb: 2,
-    okay: 3,
-    neutral: 3,
-    happy: 5,
-    great: 5
-  };
+  const canvas = document.getElementById("moodTrend");
 
-  const scores = history.map(
-    mood => moodScores[mood] || 3
-  );
-
-  if (moodTrendChart) {
-    moodTrendChart.destroy();
+  if (!canvas) {
+    console.error("❌ moodTrend canvas not found");
+    return;
   }
 
-  moodTrendChart = new Chart(
-    document.getElementById("moodTrendChart"),
-    {
-      type: "line",
+  const moodScores = {
+    happy: 5,
+    great: 5,
+    okay: 4,
+    neutral: 3,
+    tired: 2,
+    stressed: 2,
+    sad: 1,
+    low: 1,
+    numb: 1
+  };
 
-      data: {
-        labels: history.map(
-          (_, index) => `Check-In ${index + 1}`
-        ),
+  const values = moods.map(
+    mood => moodScores[mood] ?? 3
+  );
 
-        datasets: [{
-          label: "Mood",
-          data: scores,
-          tension: 0.4,
-          fill: true
-        }]
-      },
+  console.log("📈 TREND VALUES:", values);
 
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
+  new Chart(canvas, {
+    type: "line",
 
-        scales: {
-          y: {
-            min: 1,
-            max: 5,
+    data: {
+      labels: moods.map((_, index) => `Check-in ${index + 1}`),
 
-            ticks: {
-              stepSize: 1,
+      datasets: [{
+        label: "Mood Trend",
 
-              callback: function(value) {
+        data: values,
 
-                const labels = {
-                  1: "Stressed",
-                  2: "Low",
-                  3: "Okay",
-                  4: "Good",
-                  5: "Happy"
-                };
+        tension: 0.4,
 
-                return labels[value] || value;
-              }
+        fill: false,
+
+        borderWidth: 3,
+
+        pointRadius: 5
+      }]
+    },
+
+    options: {
+      responsive: true,
+
+      maintainAspectRatio: false,
+
+      scales: {
+        y: {
+          min: 0,
+          max: 5,
+
+          ticks: {
+            stepSize: 1,
+
+            callback: function(value) {
+
+              const labels = {
+                1: "Sad",
+                2: "Low",
+                3: "Neutral",
+                4: "Okay",
+                5: "Happy"
+              };
+
+              return labels[value] || value;
             }
           }
         }
+      },
+
+      plugins: {
+        legend: {
+          display: true
+        }
       }
     }
-  );
+  });
 }
 
 
@@ -832,21 +857,28 @@ generateObservation(moodHistory);
      MOOD DISTRIBUTION
   ========================= */
 
-  function createMoodDistribution(history) {
+  function createMoodDistribution(moods) {
+
+  const canvas = document.getElementById("moodDistribution");
+
+  if (!canvas) {
+    console.error("❌ moodDistribution canvas not found");
+    return;
+  }
 
   const counts = {
     happy: 0,
     great: 0,
     okay: 0,
     neutral: 0,
+    tired: 0,
+    stressed: 0,
     sad: 0,
     low: 0,
-    stressed: 0,
-    numb: 0,
-    tired: 0
+    numb: 0
   };
 
-  history.forEach(mood => {
+  moods.forEach(mood => {
 
     if (counts[mood] !== undefined) {
       counts[mood]++;
@@ -854,63 +886,58 @@ generateObservation(moodHistory);
 
   });
 
-  if (moodDistributionChart) {
-    moodDistributionChart.destroy();
-  }
+  console.log("🥧 DISTRIBUTION:", counts);
 
-  moodDistributionChart = new Chart(
-    document.getElementById("moodDistributionChart"),
-    {
+  const labels = [];
+  const values = [];
 
-      type: "doughnut",
+  Object.entries(counts).forEach(([mood, count]) => {
 
-      data: {
+    if (count > 0) {
+      labels.push(
+        mood.charAt(0).toUpperCase() + mood.slice(1)
+      );
 
-        labels: [
-          "Happy",
-          "Great",
-          "Okay",
-          "Sad",
-          "Low",
-          "Stressed",
-          "Numb",
-          "Tired"
-        ],
+      values.push(count);
+    }
 
-        datasets: [{
+  });
 
-          data: [
-            counts.happy,
-            counts.great,
-            counts.okay + counts.neutral,
-            counts.sad,
-            counts.low,
-            counts.stressed,
-            counts.numb,
-            counts.tired
-          ]
+  new Chart(canvas, {
 
-        }]
+    type: "doughnut",
 
-      },
+    data: {
 
-      options: {
+      labels: labels,
 
-        responsive: true,
-        maintainAspectRatio: false,
+      datasets: [{
+        data: values,
 
-        plugins: {
+        borderWidth: 2
+      }]
 
-          legend: {
-            position: "bottom"
-          }
+    },
 
+    options: {
+
+      responsive: true,
+
+      maintainAspectRatio: false,
+
+      plugins: {
+
+        legend: {
+          display: true,
+          position: "bottom"
         }
 
       }
 
     }
-  );
+
+  });
+
 }
 
 

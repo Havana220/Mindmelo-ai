@@ -86,12 +86,20 @@ app.post("/chat", async (req, res) => {
     const userMessage = req.body.message;
     const userName = req.body.name || "Friend";
 
+    console.log("=================================");
+console.log("👤 NAME RECEIVED FROM FRONTEND:", userName);
+console.log("💬 MESSAGE RECEIVED:", userMessage);
+console.log("=================================");
+
     if (!userMessage) {
       return res.json({ reply: "No message", mood: "neutral" });
     }
 
     // 🔍 FIND USER
     let user = await User.findOne({ username: userName });
+
+    console.log("🔎 USER FOUND IN DATABASE:", user ? user.username : "NO USER");
+console.log("💬 EXISTING MESSAGES:", user ? user.messages.length : 0);
 
     if (!user) {
       user = new User({
@@ -199,9 +207,14 @@ let journals = await Journal.find({ username: userName })
   .sort({ date: -1 })
   .limit(2);
 
+console.log("📔 JOURNALS FOUND FOR:", userName);
+console.log("📔 JOURNALS:", journals);
+
 let journalContext = journals
-  .map(j => j.text.slice(0, 100)) // limit length
+  .map(j => j.text.slice(0, 100))
   .join(" | ");
+
+console.log("🧠 JOURNAL CONTEXT SENT TO AI:", journalContext);
 
     // 🧠 AI CALL
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -219,27 +232,31 @@ let journalContext = journals
 
 User name: ${userName}
 
-Recent moods: ${lastMoods}
+Recent moods:
+${lastMoods}
 
 Private journal insights:
-${journalContext}
+${journalContext || "No journal entries available."}
 
-Instructions:
-- Use journal insights naturally in conversation when relevant
-- DO NOT say "from your journal"
-- Make it feel like you remember the user
-- Be slightly specific, not generic
-- Keep it warm, calm, and human
+Important memory rules:
+- NEVER invent memories, past conversations, journal entries, events, habits, or personal details.
+- NEVER claim that the user previously told you something unless that information is actually present in the conversation history or journal insights provided above.
+- If this is a new user or there is no previous context, treat the conversation as a first conversation.
+- Do not say "I remember you mentioned..." unless the provided context actually contains that information.
+- Do not invent details such as walks, meetings, routines, college activities, relationships, or past feelings.
+- Use journal insights naturally only when they actually exist and are relevant.
+- If there is no journal context, simply respond to the user's current message.
+- Be warm, supportive, conversational, and human.
+- Keep responses reasonably concise.
+- Avoid generic lectures and repetitive phrases.
 
-Example style:
-"I know you've been feeling stuck and a bit lost lately…"
+Your response must be based only on:
+1. The current user message.
+2. The conversation history provided to you.
+3. The journal insights provided to you.
+4. The recent moods provided to you.
 
-Avoid:
-- Being too generic
-- Giving long lectures
-- Repeating the same phrases
-
-Be supportive, conversational, and real.`
+Never fabricate personal context.`
           },
           ...user.messages.map(m => ({
             role: m.role,
@@ -472,8 +489,60 @@ app.get("/checkins/:username", async (req, res) => {
 });
 
 /* =========================
-   📊 INSIGHTS
+   📜 CHAT HISTORY
 ========================= */
+
+app.get("/history/:username", async (req, res) => {
+
+  try {
+
+    const username =
+      req.params.username;
+
+    const user =
+      await User.findOne({
+        username: username
+      });
+
+    if (!user) {
+
+      return res.json({
+        success: true,
+        messages: []
+      });
+
+    }
+
+
+    res.json({
+
+      success: true,
+
+      messages:
+        user.messages || []
+
+    });
+
+  }
+
+  catch (error) {
+
+    console.log(
+      "❌ HISTORY ERROR:",
+      error
+    );
+
+    res.status(500).json({
+
+      success: false,
+
+      messages: []
+
+    });
+
+  }
+
+});
 
 /* =========================
    📊 INSIGHTS
@@ -482,18 +551,27 @@ app.get("/checkins/:username", async (req, res) => {
 app.get("/insights/:username", async (req, res) => {
   try {
 
-    const username = req.params.username;
+    const username = decodeURIComponent(req.params.username).trim();
+
+    console.log("📊 INSIGHTS REQUEST FOR:", username);
 
     /* =========================
        💬 CONVERSATION MOODS
     ========================= */
 
     const user = await User.findOne({
-      username: username
+      username: {
+        $regex: `^${username}$`,
+        $options: "i"
+      }
     });
 
-    const conversationMoods =
-      user?.moods || [];
+    const conversationMoods = user?.moods || [];
+
+    console.log(
+      "💬 CONVERSATION MOODS:",
+      conversationMoods
+    );
 
 
     /* =========================
@@ -501,11 +579,27 @@ app.get("/insights/:username", async (req, res) => {
     ========================= */
 
     const checkIns = await CheckIn
-      .find({ username: username })
+      .find({
+        username: {
+          $regex: `^${username}$`,
+          $options: "i"
+        }
+      })
       .sort({ date: 1 });
 
-    const checkinMoods =
-      checkIns.map(checkIn => checkIn.mood);
+    const checkinMoods = checkIns.map(
+      checkIn => checkIn.mood
+    );
+
+    console.log(
+      "🌱 CHECK-INS FOUND:",
+      checkIns.length
+    );
+
+    console.log(
+      "🌱 CHECK-IN MOODS:",
+      checkinMoods
+    );
 
 
     /* =========================
@@ -520,13 +614,9 @@ app.get("/insights/:username", async (req, res) => {
     };
 
     conversationMoods.forEach(mood => {
-
-      if (
-        conversationCounts[mood] !== undefined
-      ) {
+      if (conversationCounts[mood] !== undefined) {
         conversationCounts[mood]++;
       }
-
     });
 
 
@@ -547,13 +637,9 @@ app.get("/insights/:username", async (req, res) => {
     };
 
     checkinMoods.forEach(mood => {
-
-      if (
-        checkinCounts[mood] !== undefined
-      ) {
+      if (checkinCounts[mood] !== undefined) {
         checkinCounts[mood]++;
       }
-
     });
 
 
@@ -563,9 +649,7 @@ app.get("/insights/:username", async (req, res) => {
 
     const latestConversationMood =
       conversationMoods.length > 0
-        ? conversationMoods[
-            conversationMoods.length - 1
-          ]
+        ? conversationMoods[conversationMoods.length - 1]
         : null;
 
 
@@ -575,9 +659,7 @@ app.get("/insights/:username", async (req, res) => {
 
     const latestCheckinMood =
       checkinMoods.length > 0
-        ? checkinMoods[
-            checkinMoods.length - 1
-          ]
+        ? checkinMoods[checkinMoods.length - 1]
         : null;
 
 
@@ -630,8 +712,7 @@ app.get("/insights/:username", async (req, res) => {
 
       success: false,
 
-      message:
-        "Unable to load insights"
+      message: "Unable to load insights"
 
     });
 

@@ -277,14 +277,12 @@
     ========================= */
 
     .feature-grid {
+  display: grid;
 
-      display: grid;
+  grid-template-columns: repeat(3, 1fr);
 
-      grid-template-columns:
-        repeat(4, 1fr);
-
-      gap: 20px;
-    }
+  gap: 20px;
+}
 
 
     .feature-card {
@@ -357,6 +355,107 @@
     }
 
 
+
+/* =========================
+   CURRENT MOOD
+========================= */
+
+.current-mood-content {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+
+  margin-top: 8px;
+}
+
+.current-mood-emoji {
+
+  width: 65px;
+  height: 65px;
+
+  border-radius: 20px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  font-size: 34px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #b3e5fc,
+      #f8bbd0
+    );
+}
+
+.current-mood-text strong {
+
+  display: block;
+
+  color: #3f3d70;
+
+  font-size: 20px;
+
+  margin-bottom: 5px;
+}
+
+.current-mood-text span {
+
+  color: #888;
+
+  font-size: 13px;
+}
+
+
+/* =========================
+   CHECK-IN STATS
+========================= */
+
+.checkin-stat {
+
+  margin-top: 18px;
+
+  padding-top: 15px;
+
+  border-top: 1px solid #eee5f2;
+
+  color: #777;
+
+  font-size: 13px;
+}
+
+.checkin-stat strong {
+
+  color: #5e35b1;
+
+  font-size: 15px;
+}
+
+
+/* =========================
+   RESPONSIVE ACTIVITY
+========================= */
+
+@media(max-width: 900px) {
+
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero-circle {
+    width: 140px;
+    height: 140px;
+    font-size: 55px;
+  }
+
+}
+
+
     /* =========================
        BOTTOM SECTION
     ========================= */
@@ -404,60 +503,44 @@
     }
 
 
-    /* =========================
-       RESPONSIVE
-    ========================= */
-
-    @media(max-width: 900px) {
-
-      .feature-grid {
-        grid-template-columns:
-          repeat(2, 1fr);
-      }
-
-      .hero-circle {
-        width: 140px;
-        height: 140px;
-        font-size: 55px;
-      }
-    }
-
-
     @media(max-width: 650px) {
 
-      .navbar {
-        padding: 0 20px;
-      }
+  .navbar {
+    padding: 0 20px;
+  }
 
-      .main {
-        width: 92%;
-        margin: 25px auto;
-      }
+  .main {
+    width: 92%;
+    margin: 25px auto;
+  }
 
-      .hero {
-        padding: 30px;
+  .hero {
+    padding: 30px;
+    flex-direction: column;
+    text-align: center;
+  }
 
-        flex-direction: column;
+  .hero-text h1 {
+    font-size: 31px;
+  }
 
-        text-align: center;
-      }
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
 
-      .hero-text h1 {
-        font-size: 31px;
-      }
+  .dashboard-activity {
+    grid-template-columns: 1fr;
+  }
 
-      .feature-grid {
-        grid-template-columns: 1fr;
-      }
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
 
-      .bottom-grid {
-        grid-template-columns: 1fr;
-      }
+  .welcome {
+    display: none;
+  }
 
-      .welcome {
-        display: none;
-      }
-    }
+}
 
   </style>
 </head>
@@ -628,10 +711,9 @@
 
 
 
-  <!-- BOTTOM -->
+<!-- BOTTOM -->
 
-  <section class="bottom-grid">
-
+<section class="bottom-grid">
 
     <div class="info-card">
 
