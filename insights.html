@@ -735,7 +735,7 @@ function logout() {
       localStorage.getItem("username") || "Friend";
 
     const response = await fetch(
-      `http://localhost:5000/insights/${encodeURIComponent(username)}`
+      `https://mindmelo-backend.onrender.com/insights/${encodeURIComponent(username)}`
     );
 
     const data = await response.json();
@@ -1108,7 +1108,7 @@ async function loadCheckinInsights() {
   try {
 
     const response = await fetch(
-      `http://localhost:5000/checkins/${encodeURIComponent(username)}`
+      `https://mindmelo-backend.onrender.com/checkins/${encodeURIComponent(username)}`
     );
 
     const data = await response.json();

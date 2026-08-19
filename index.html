@@ -1699,7 +1699,7 @@ async function sendMessage() {
 
   try {
 
-    const res = await fetch("http://localhost:5000/chat", {
+    const res = await fetch("https://mindmelo-backend.onrender.com", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -1870,7 +1870,7 @@ async function renderCharts() {
   try {
 
     const response = await fetch(
-      `http://localhost:5000/insights/${encodeURIComponent(username)}`
+      `https://mindmelo-backend.onrender.com/insights/${encodeURIComponent(username)}`
     );
 
     const data = await response.json();
@@ -2418,7 +2418,7 @@ async function saveJournal() {
 
   if (!text) return;
 
-  await fetch("http://localhost:5000/journal", {
+  await fetch("https://mindmelo-backend.onrender.com/journal", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -2436,7 +2436,7 @@ async function saveJournal() {
 async function loadJournal() {
   let username = localStorage.getItem("username") || "Friend";
 
-  let res = await fetch(`http://localhost:5000/journal/${username}`);
+  let res = await fetch(`https://mindmelo-backend.onrender.com/journal/${username}`);
   let data = await res.json();
 
   let html = "";
@@ -2541,7 +2541,7 @@ async function saveCheckIn() {
 
 
     const response = await fetch(
-      "http://localhost:5000/checkin",
+      "https://mindmelo-backend.onrender.com/checkin",
       {
         method: "POST",
 
@@ -2635,7 +2635,7 @@ async function loadHistory() {
   try {
 
     const response = await fetch(
-      `http://localhost:5000/history/${encodeURIComponent(username)}`
+      `https://mindmelo-backend.onrender.com/history/${encodeURIComponent(username)}`
     );
 
     if (!response.ok) {
